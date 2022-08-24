@@ -6,7 +6,6 @@ module ex_mem(
 	input wire						rst,
 	
 	
-	//来自执行阶段的信�?
 	input wire[`RegAddrBus]       	ex_wd,
 	input wire[`WriteBus]           ex_wreg,
 	input wire[`RegBus]				ex_wdata, 	
@@ -16,7 +15,7 @@ module ex_mem(
 	input wire[`RegBus]				ex_reg2,
 	input wire[`InstAddrBus]		ex_pc,
 
-	//送到访存阶段的信�?
+
 	output reg[`RegAddrBus]      	mem_wd,
 	output reg[`WriteBus]           mem_wreg,
 	output reg[`RegBus]				mem_wdata,
@@ -26,7 +25,12 @@ module ex_mem(
 	output reg[`RegBus]				mem_reg2,
 	output reg[`InstAddrBus]		mem_pc
 	
-	
 );
+
+    always @(posedge clk) begin
+        if(rst == `RstDisable) begin
+            
+        end
+    end
 
 endmodule

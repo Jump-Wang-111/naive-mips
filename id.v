@@ -4,41 +4,42 @@
 module id(
 
 	input wire					  rst,
-	input wire[`InstAddrBus]	  pc_i,         // 璇戠爜闃舵鐨勬寚浠ゅ搴旂殑鍦板潃
-	input wire[`InstBus]          inst_i,       // 璇戠爜闃舵鐨勬寚锟??
+	input wire[`InstAddrBus]	  pc_i,         // id阶段指令对应的pc
+	input wire[`InstBus]          inst_i,       // id阶段指令
 
-	// 澶勪簬鎵ц闃舵鐨勬寚浠ょ殑杩愮畻缁撴灉
-	input wire					  ex_wreg_i,    // 澶勪簬鎵ц闃舵鐨勭殑鎸囦护鏄惁瑕佸啓鐩殑瀵勫瓨锟???
-	input wire[`RegBus]			  ex_wdata_i,   // 澶勪簬鎵ц闃舵鐨勬寚浠よ鍐欑殑鐩殑瀵勫瓨鍣ㄧ殑鏁版嵁
-	input wire[`RegAddrBus]       ex_wd_i,      // 澶勪簬鎵ц闃舵鐨勬寚浠よ鍐欏叆鐨勭洰鐨勫瘎瀛樺櫒鐨勫湴锟???
+	// ex阶段运算结果
+	input wire					  ex_wreg_i,    // ex阶段指令是否写寄存器
+	input wire[`RegBus]			  ex_wdata_i,   // ex阶段指令写寄存器数据
+	input wire[`RegAddrBus]       ex_wd_i,      // ex阶段指令写寄存器号
 	
-	// 澶勪簬璁垮瓨闃舵鐨勬寚浠ょ殑杩愮畻缁撴灉
-	input wire					  mem_wreg_i,   // 澶勪簬璁垮瓨闃舵鐨勬寚浠ゆ槸鍚﹁鍐欑洰鐨勫瘎瀛樺櫒
-	input wire[`RegBus]			  mem_wdata_i,  // 澶勪簬璁垮瓨闃舵鐨勬寚浠よ鍐欑殑鐩殑瀵勫瓨鍣ㄧ殑鏁版嵁
-	input wire[`RegAddrBus]       mem_wd_i,     // 澶勪簬璁垮瓨闃舵鐨勬寚浠よ鍐欏叆鐨勭洰鐨勫瘎瀛樺櫒鐨勫湴锟???
+	// mem阶段结果
+	input wire					  mem_wreg_i,   // mem阶段指令是否写寄存器
+	input wire[`RegBus]			  mem_wdata_i,  // mem阶段指令写寄存器数据
+	input wire[`RegAddrBus]       mem_wd_i,     // mem阶段指令写寄存器号
 	
-	// 璇诲彇鐨剅egfile妯″潡鐨勶拷??
-	input wire[`RegBus]           reg1_data_i,  // regfile妯″潡杈撳叆鐨勭锟???????涓瀵勫瓨鍣ㄧ鍙ｇ殑杈撳叆
-	input wire[`RegBus]           reg2_data_i,  // regfile妯″潡杈撳叆鐨勭浜屼釜璇诲瘎瀛樺櫒绔彛鐨勮緭锟???????
+	// 读到的regfile数据
+	input wire[`RegBus]           reg1_data_i,  // 读regfile得到的第1个数据
+	input wire[`RegBus]           reg2_data_i,  // 读regfile得到的第2个数据
 
-	// 杈撳嚭鍒皉egfile妯″潡鐨勶拷??
-	output reg                    reg1_read_o,  // regfile妯″潡鐨勭锟???????涓瀵勫瓨鍣ㄧ鍙ｇ殑璇讳娇鑳戒俊锟???????
-	output reg                    reg2_read_o,  // regfile妯″潡鐨勭浜屼釜璇诲瘎瀛樺櫒绔彛鐨勮浣胯兘淇″彿
-	output reg[`RegAddrBus]       reg1_addr_o,  // regfile妯″潡鐨勭锟???????涓瀵勫瓨鍣ㄧ鍙ｇ殑璇诲湴锟???????淇″彿 5bit
-	output reg[`RegAddrBus]       reg2_addr_o, 	// regfile妯″潡鐨勭浜屼釜璇诲瘎瀛樺櫒绔彛鐨勮鍦板潃淇″彿 5bit
+	// 输出到regfile的读信号
+	output reg                    reg1_read_o,  // regfile第1个读使能
+	output reg                    reg2_read_o,  // regfile第2个读使能
+	output reg[`RegAddrBus]       reg1_addr_o,  // regfile第1个读寄存器号
+	output reg[`RegAddrBus]       reg2_addr_o, 	// regfile第2个读寄存器号
 	
-	// 杈撳嚭鍒版墽琛岄樁娈电殑锟???????
-	output reg[`AluOpBus]         aluop_o,      // 璇戠爜闃舵鐨勬寚浠よ杩涜鐨勮繍绠楃殑瀛愮被锟??????? 8bit
-	output reg[`AluSelBus]        alusel_o,     // 璇戠爜闃舵鐨勬寚浠よ杩涜鐨勮繍绠楃殑绫诲瀷 3bit
-	output reg[`RegBus]           reg1_o,       // 璇戠爜闃舵鐨勬寚浠よ杩涜鐨勮繍绠楃殑婧愭搷浣滄暟1 32bit
-	output reg[`RegBus]           reg2_o,       // 璇戠爜闃舵鐨勬寚浠よ杩涜鐨勮繍绠楃殑婧愭搷浣滄暟2 32bit
-	output reg[`RegAddrBus]       wd_o,         // 璇戠爜闃舵鐨勬寚浠よ鍐欏叆鐨勭洰鐨勫瘎瀛樺櫒鐨勫湴锟??????? 5bit
-	output reg[`WriteBus]         wreg_o,       // 璇戠爜闃舵鐨勬寚浠ゆ槸鍚︽湁瑕佸啓鍏ョ殑鐩殑瀵勫瓨锟??????? 
-	output reg[`RegBus] 		  return_addr_o,  // 锟?????瑕佷繚瀛樼殑杩斿洖鍦板潃 
+	// 输出到ex阶段的信号
+	output reg[`AluOpBus]         aluop_o,      // id阶段指令要进行的运算子类
+	output reg[`AluSelBus]        alusel_o,     // id阶段指令要进行的运算类型
+	output reg[`RegBus]           reg1_o,       // id阶段指令要进行运算的操作数1
+	output reg[`RegBus]           reg2_o,       // id阶段指令要进行运算的操作数2
+	output reg[`RegAddrBus]       wd_o,         // id阶段指令要写入的目的寄存器号
+	output reg[`WriteBus]         wreg_o,       // id阶段指令是否写入寄存器
+/* 疑惑 */
+	output reg[`RegBus] 		  return_addr_o, // 保存的返回地址
 
-	// 杈撳嚭鍒皃c_reg妯″潡鐨勶拷??
-	output reg                    branch_flag_o,          // 鏄惁瑕佽烦锟???????
-	output reg[`InstAddrBus]	  branch_target_address_o,  // 璺宠浆鍒扮殑鍦板潃
+	// 输出到pc_reg模块的信号
+	output reg                    branch_flag_o,          // 是否要跳转
+	output reg[`InstAddrBus]	  branch_target_address_o,  // 跳转的pc值
 
 	output wire[`RegBus]		  inst_o,
 	output wire[`InstAddrBus]	  pc_o,

@@ -19,7 +19,7 @@ module pc_reg(
     assign pc_ds = pc + 32'h4;
 	
 	always @(posedge clk) begin
-        if (rst == `RstEnable) pc <= 32'hbfc00000;
+        if (rst == `RstDisable) pc <= 32'hbfc00000;
         else pc <= pc_ds;
     end
 	

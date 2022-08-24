@@ -1,4 +1,4 @@
-//全局
+// GLOBAL
 `define RstEnable 1'b1
 `define RstDisable 1'b0
 `define ZeroWord 32'h00000000
@@ -31,91 +31,92 @@
 `define ChipDisable 1'b0
 
 
-// 指令
+// INST/FUNC
 
-//逻辑操作
-`define EXE_OR   6'b100101
-`define EXE_XOR 6'b100110
-`define EXE_ORI  6'b001101
-`define EXE_XORI 6'b001110
-`define EXE_LUI 6'b001111
+// LOGIC
+`define FUNC_OR   6'b100101
+`define FUNC_XOR 6'b100110
+`define INST_ORI  6'b001101
+`define INST_XORI 6'b001110
+`define INST_LUI 6'b001111
 
-//移位操作
-`define EXE_SLL  6'b000000
-`define EXE_SRL  6'b000010
+// SHIFT
+`define FUNC_SLL  6'b000000
+`define FUNC_SRL  6'b000010
 
-//算数操作
-`define EXE_SLT  6'b101010
-`define EXE_SLTU  6'b101011
-`define EXE_ADD  6'b100000
-`define EXE_ADDU  6'b100001
-`define EXE_SUB  6'b100010
-`define EXE_SUBU  6'b100011
-`define EXE_ADDI  6'b001000
-`define EXE_ADDIU  6'b001001  
+// ARITHMETIC
+`define FUNC_SLT  6'b101010
+`define FUNC_SLTU  6'b101011
+`define FUNC_ADD  6'b100000
+`define FUNC_ADDU  6'b100001
+`define FUNC_SUB  6'b100010
+`define FUNC_SUBU  6'b100011
+`define INST_ADDI  6'b001000
+`define INST_ADDIU  6'b001001  
 
-`define EXE_NOP 6'b000000
+`define INST_NOP 6'b000000
 
-`define EXE_SPECIAL_INST 6'b000000
-`define EXE_REGIMM_INST 6'b000001
-`define EXE_SPECIAL2_INST 6'b011100
+`define INST_SPECIAL 6'b000000
+`define INST_REGIMM 6'b000001
+/* �ɻ� */
+`define INST_SPECIAL2 6'b011100
 
-// 跳转操作
-`define EXE_J  6'b000010
-`define EXE_JAL  6'b000011
-`define EXE_JR  6'b001000
-`define EXE_BEQ  6'b000100
-`define EXE_BNE  6'b000101
+// JUMP
+`define INST_J  6'b000010
+`define INST_JAL  6'b000011
+`define FUNC_JR  6'b001000
+`define INST_BEQ  6'b000100
+`define INST_BNE  6'b000101
 
-// 存取操作
-`define EXE_LW  6'b100011
-`define EXE_SW  6'b101011
+// LOAD/SAVE
+`define INST_LW  6'b100011
+`define INST_SW  6'b101011
 
 //AluOp
-`define EXE_OR_OP    8'b00100101
-`define EXE_XOR_OP  8'b00100110
-`define EXE_ORI_OP  8'b01011010
-`define EXE_XORI_OP  8'b01011011
-`define EXE_LUI_OP  8'b01011100   
+`define ALU_OP_OR    8'b00100101
+`define ALU_OP_XOR  8'b00100110
+`define ALU_OP_ORI  8'b01011010
+`define ALU_OP_XORI  8'b01011011
+`define ALU_OP_LUI  8'b01011100   
 
-`define EXE_SLL_OP  8'b01111100
-`define EXE_SRL_OP  8'b00000010
+`define ALU_OP_SLL  8'b01111100
+`define ALU_OP_SRL  8'b00000010
 
-`define EXE_SLT_OP 8'b00101010
-`define EXE_SLTU_OP 8'b00101011
-`define EXE_ADD_OP 8'b00100000
-`define EXE_ADDU_OP 8'b00100001
-`define EXE_SUB_OP 8'b00100010
-`define EXE_SUBU_OP 8'b00100011
-`define EXE_ADDI_OP 8'b01010101
-`define EXE_ADDIU_OP 8'b01010110
+`define ALU_OP_SLT 8'b00101010
+`define ALU_OP_SLTU 8'b00101011
+`define ALU_OP_ADD 8'b00100000
+`define ALU_OP_ADDU 8'b00100001
+`define ALU_OP_SUB 8'b00100010
+`define ALU_OP_SUBU 8'b00100011
+`define ALU_OP_ADDI 8'b01010101
+`define ALU_OP_ADDIU 8'b01010110
 
-`define EXE_JAL_OP  8'b01010000
-`define EXE_JR_OP  8'b00001000
-`define EXE_BEQ_OP  8'b01010001
-`define EXE_BNE_OP  8'b01010010
+`define ALU_OP_JAL  8'b01010000
+`define ALU_OP_JR  8'b00001000
+`define ALU_OP_BEQ  8'b01010001
+`define ALU_OP_BNE  8'b01010010
 
-`define EXE_LW_OP  8'b11100011
-`define EXE_SW_OP  8'b11101011
+`define ALU_OP_LW  8'b11100011
+`define ALU_OP_SW  8'b11101011
 
-`define EXE_NOP_OP    8'b00000000
+`define ALU_OP_NOP    8'b00000000
 
-//AluSel
-`define EXE_RES_LOGIC 3'b001
-`define EXE_RES_SHIFT 3'b010
-`define EXE_RES_ARITHMETIC 3'b100
-`define EXE_RES_JUMP_BRANCH 3'b110
-`define EXE_RES_NOP 3'b000
-`define EXE_RES_LOAD_STORE 3'b111	
+// AluSel
+`define ALU_RES_LOGIC 3'b001
+`define ALU_RES_SHIFT 3'b010
+`define ALU_RES_ARITHMETIC 3'b100
+`define ALU_RES_JUMP_BRANCH 3'b110
+`define ALU_RES_NOP 3'b000
+`define ALU_RES_LOAD_STORE 3'b111	
 
-//指令存储器inst_rom
+// inst_rom
 `define InstAddrBus 31:0
 `define InstBus 31:0
 `define InstMemNum 131071
 `define InstMemNumLog2 17
 
 
-//ͨ通用寄存器regfile
+// regfile
 `define RegAddrBus 4:0
 `define RegBus 31:0
 `define RegWidth 32
@@ -123,4 +124,4 @@
 `define DoubleRegBus 63:0
 `define RegNum 32
 `define RegNumLog2 5
-`define NOPRegAddr 5'b00000
+`define ZeroRegAddr 5'b00000

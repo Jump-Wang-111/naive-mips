@@ -6,9 +6,9 @@ module id_ex(
 	input wire						rst,
 
 	
-	//从译码阶段传递的信息
-	input wire[`AluOpBus]         	id_aluop,		//运算的类�?
-	input wire[`AluSelBus]        	id_alusel,		//运算的子类型
+	
+	input wire[`AluOpBus]         	id_aluop,		
+	input wire[`AluSelBus]        	id_alusel,		
 	input wire[`RegBus]           	id_reg1,		
 	input wire[`RegBus]           	id_reg2,
 	input wire[`RegAddrBus]       	id_wd,
@@ -19,7 +19,7 @@ module id_ex(
 	
 
 	
-	//传�?�到执行阶段的信�?
+	
 	output reg[`AluOpBus]         	ex_aluop,
 	output reg[`AluSelBus]        	ex_alusel,
 	output reg[`RegBus]           	ex_reg1,
@@ -30,5 +30,29 @@ module id_ex(
 	output reg[`RegBus]				ex_inst,
 	output reg[`RegBus]				ex_pc
 );
+
+    always @(posedge clk) begin
+        if(rst == `RstDisable) begin
+            ex_aluop <= `ALU_OP_NOP;
+	        ex_alusel <= `ALU_RES_NOP;
+            ex_reg1 <= `ZeroWord;
+            ex_reg2 <= `ZeroWord;
+            ex_wd <= `ZeroRegAddr;
+            ex_wreg <= `WriteDisable;
+            ex_return_addr <= `ZeroWord;
+            ex_inst <= `ZeroWord;
+            ex_pc <= 32'hbfc00000;
+        end else begin
+            ex_aluop <= id_aluop;
+	        ex_alusel <= id_alusel;
+            ex_reg1 <= id_reg1;
+            ex_reg2 <= id_reg2;
+            ex_wd <= id_wd;
+            ex_wreg <= id_wreg;
+            ex_return_addr <= id_return_addr;
+            ex_inst <= id_inst;
+            ex_pc <= id_pc;
+        end
+    end
 
 endmodule
