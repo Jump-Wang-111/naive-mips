@@ -9,8 +9,8 @@ module pc_reg(
 	input wire[`InstAddrBus]	branch_target_address_i,  // 
 	input wire					stall,
 
-	output reg[`InstAddrBus]	pc,                       //
-	output wire[`InstAddrBus]   pc_three,                //
+	output reg[`InstAddrBus]	pc,                         //
+	output wire[`InstAddrBus]   pc_three,                  //
 	output reg                  ce                       // inst memory enable
 	
     );
