@@ -18,7 +18,7 @@ module mycpu_top(
 	output [3:0]						data_sram_wen,		// ÓĞĞ§×Ö½Ú
 	output [31:0]						data_sram_addr, 	
 	output [31:0]						data_sram_wdata,	
-	input [31:0]						data_sram_rdata,	
+	input  [31:0]						data_sram_rdata,	
 
 	output [31:0]						debug_wb_pc,		
 	output [3:0]						debug_wb_rf_wen,	

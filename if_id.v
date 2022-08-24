@@ -3,19 +3,27 @@
 
 module if_id(
 
-	input wire			      	  clk,
-	input wire					  rst,
+	input  wire                     clk,
+	input  wire                     rst,
 	
+	input  wire [`InstAddrBus]      if_pc,          // 
+	input  wire [`InstBus]          if_inst,        //
+	input  wire                     stall,
+	input  wire                     stall_aluop,
+	output reg  [`InstAddrBus]      id_pc,          // 
+	output reg  [`InstBus]          id_inst         // 
+	
+    );
 
-	input wire[`InstAddrBus]	  if_pc,    // 取指阶段取得的指令对应的地址 32bit
-	input wire[`InstBus]          if_inst,  // 取指阶段取得的指�? 32bit
-	input wire					  stall,
-	input wire   				  stall_aluop,
-	output reg[`InstAddrBus]      id_pc,    // 译码阶段的指令对应的地址 32bit
-	output reg[`InstBus]          id_inst   // 译码阶段的指�? 32bit
-	
-);
-
-	
+	always @(posedge clk) begin
+        if(rst == `RstEnable) begin
+            id_pc   <= `ZeroWord;
+            id_inst <= `ZeroWord;
+        end
+        else begin
+            id_pc   <= if_pc;
+            id_inst <= if_inst;
+        end
+    end
 
 endmodule
