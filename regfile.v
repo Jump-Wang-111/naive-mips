@@ -13,8 +13,6 @@ module regfile(
 	input wire[`RegBus]			  wdata,    
 		
 //	input wire[`RegBus]			  wdata_from_ram,
-
-
 	
 	input wire					  re1,      
 	input wire[`RegAddrBus]		  raddr1,   
