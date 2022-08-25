@@ -38,7 +38,7 @@ module id(
 	output reg[`RegBus] 		  return_addr_o, // 保存的返回地址
 
 	// 输出到pc_reg模块的信号
-	output reg                    branch_flag_o,          // 是否要跳转
+	output reg                    branch_flag_o,           	// 是否要跳转
 	output reg[`InstAddrBus]	  branch_target_address_o,  // 跳转的pc值
 
 	output wire[`RegBus]		  inst_o,
@@ -46,5 +46,63 @@ module id(
 	output reg 			      	  stallreq
 			
 );
+	wire [5:0] opcode = inst_i[31:26];
+	wire [4:0] rs = inst_i[25:21];
+	wire [4:0] rt = inst_i[20:16];
+	wire [4:0] rd = inst_i[15:11];
+	wire [4:0] sa = inst_i[10:6];
+	wire [5:0] func = inst_i[5:0];
+	wire [15:0] imm16 = inst_i[15:0];
+	wire [25:0] imm26 = inst_i[25:0];
+	wire [31:0] imm16_singe = {16{imm16[15]}, imm16};
+	wire [31:0] imm16_unsinge = {16'b0, imm16};
+	wire [31:0] imm26_singe = {6{imm16[25]}, imm26};
+	wire [31:0] imm26_unsinge = {6'b0, imm26};
+	
+	assign stallreq = `NoStop;
+
+	always @(*) begin
+		if(rst == `RstDisable) begin
+			reg1_read_o <= `ReadDisable;
+			reg2_read_o <= `ReadDisable;
+			reg1_addr_o <= `ZeroRegAddr;
+			reg2_addr_o <= `ZeroRegAddr;
+			aluop_o <= `ALU_OP_NOP;
+			alusel_o <= `ALU_RES_NOP;
+			reg1_o <= `ZeroWord;
+			reg2_o <= `ZeroWord;
+			wd_o <= `ZeroRegAddr;
+			wreg_o <= `WriteDisable;
+			return_addr_o <= `ZeroRegAddr;
+			branch_flag_o <= `NotBranch;
+			branch_target_address_o <= `ZeroWord;
+			inst_o <= `ZeroWord;
+			pc_o <= `InitialPc;
+		end else begin
+			reg1_read_o <= `ReadDisable;
+			reg2_read_o <= `ReadDisable;
+			reg1_addr_o <= `ZeroRegAddr;
+			reg2_addr_o <= `ZeroRegAddr;
+			aluop_o <= `ALU_OP_NOP;
+			alusel_o <= `ALU_RES_NOP;
+			reg1_o <= `ZeroWord;
+			reg2_o <= `ZeroWord;
+			wd_o <= `ZeroRegAddr;
+			wreg_o <= `WriteDisable;
+			/* */return_addr_o <= `ZeroRegAddr;
+			/* */branch_flag_o <= `NotBranch;
+			/* */branch_target_address_o <= `ZeroWord;
+			inst_o <= inst_i;
+			pc_o <= pc_i;
+			case(opcode)
+				`INST_ :	begin
+
+				end
+				default begin
+
+				end
+			endcase
+		end
+	end
 
 endmodule
