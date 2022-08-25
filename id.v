@@ -96,7 +96,7 @@ module id(
 			pc_o <= pc_i;
 			case(opcode)
 				`INST_ORI :	begin
-
+					
 				end
 				`INST_ANDI :	begin
 
@@ -253,6 +253,9 @@ module id(
 				default : begin
 
 				end
+			default : begin
+
+			end
 			endcase
 		end
 	end
