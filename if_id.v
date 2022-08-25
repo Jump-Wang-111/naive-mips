@@ -10,6 +10,7 @@ module if_id(
 	input  wire [`InstBus]          if_inst,
 	input  wire                     stall,
 	input  wire                     stall_aluop,
+    
 	output reg  [`InstAddrBus]      id_pc,
 	output reg  [`InstBus]          id_inst
 	

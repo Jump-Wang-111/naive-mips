@@ -21,11 +21,16 @@ module mem_wb(
 	
 );
     
-    always @(posedge) begin
+    always @(posedge clk) begin
         if(rst == `RstDisable) begin
-        
-        end else begin
-        
+            wb_wd       <= `ZeroRegAddr;
+            wb_wreg     <= `WriteDisable;
+            wb_wdata    <= `ZeroWord;
+        end 
+        else begin
+            wb_wd       <= mem_wd;
+            wb_wreg     <= mem_wreg;
+            wb_wdata    <= mem_wdata;
         end
     end
 
