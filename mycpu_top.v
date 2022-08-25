@@ -376,11 +376,11 @@ module mycpu_top(
 		.stall(pc_stall),
 
 		.pc(pc_pc),
-		.pc_three(pc_three)
-		.ce(inst_sram_en),
+		.pc_three(pc_three),
+		.ce(inst_sram_en)
 	);
 
-	inst_sram_addr = pc_pc;
+	assign inst_sram_addr = pc_pc;
 
 	//if_id
 	wire [`InstAddrBus]      if_id_if_pc;
@@ -390,8 +390,8 @@ module mycpu_top(
 	wire [`InstAddrBus]      if_id_id_pc;
 	wire [`InstBus]          if_id_id_inst; 
 
-	if_id_id_pc = pc_pc;
-	if_id_if_inst = inst_sram_rdata;
+	assign if_id_id_pc = pc_pc;
+	assign if_id_if_inst = inst_sram_rdata;
 
 	if_id if_id0(
 		.clk(clk),

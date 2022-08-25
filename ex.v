@@ -109,9 +109,6 @@ module ex(
 			`ALU_OP_SH :	begin
 
 			end
-			`ALU_OP_SPECIAL : begin
-			
-			end
 			`ALU_OP_AND : begin
 
 			end
@@ -179,9 +176,6 @@ module ex(
 
 			end
 			`ALU_OP_JALR : begin
-
-			end
-			default : begin
 
 			end
 			default : begin

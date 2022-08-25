@@ -73,31 +73,26 @@
 `define INST_JAL    6'b000011
 `define FUNC_JR     6'b001000
 `define FUNC_JALR   6'b001001
-`define INST_BEQ    6'b000100
-`define INST_B      6'b000100 
+`define INST_BEQ_B  6'b000100
 `define RS_B    5'b00000
 `define RT_B    5'b00000 
 
 `define INST_BGTZ   6'b000111
 `define INST_BLEZ   6'b000110
 `define INST_BNE    6'b000101
-`define INST_BLTZ   6'b000001
+`define INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL   6'b000001
 `define RT_BLTZ     5'b00000
-`define INST_BLTZAL 6'b000001
 `define RT_BLTZAL   5'b10000
 
-`define INST_BGEZ   6'b000001
 `define RT_BGEZ     5'b00001
-`define INST_BGEZAL 6'b000001
 `define RT_BGEZAL   5'b10001
-`define INST_BAL    6'b000001
 `define RS_BAL      5'b00000
 `define RT_BAL      5'b10001
 `define INST_LW     6'b100011
 `define INST_SW     6'b101011
 
 `define INST_LB     6'b100000
-`define INST_LS     6'b101000
+`define INST_SB     6'b101000
 `define INST_LH     6'b100001
 `define INST_SH     6'b101001
 
