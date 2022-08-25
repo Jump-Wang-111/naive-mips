@@ -4,28 +4,31 @@ module mem(
 
 	input wire						rst,
 	
-	//鏉ヨ嚜鎵ц闃舵鐨勪俊锟???
-	input wire[`RegAddrBus]       	wd_i,
-	input wire[`RegBus]             wreg_i,
-	input wire[`RegBus]				wdata_i,
+	// 来自执行阶段的信号
+	input wire[`RegAddrBus]       	wd_i,       // mem阶段指令写目的寄存器号
+	input wire[`RegBus]             wreg_i,    // mem阶段指令写寄存器使能
+	input wire[`RegBus]				wdata_i,    // mem阶段指令写入目的寄存器数据
 	
-	input wire[`AluOpBus]			aluop_i,	//璁垮瓨闃舵鐨勬寚浠よ杩涜鐨勮繍绠楃殑瀛愮被锟???
-	input wire[`RegBus]				mem_addr_i,	//璁垮瓨闃舵鐨勫姞杞斤拷?锟藉瓨鍌ㄦ寚浠ゅ搴旂殑瀛樺偍鍣ㄥ湴锟???
-	input wire[`RegBus]				reg2_i,		//璁垮瓨闃舵鐨勫瓨鍌ㄦ寚浠よ瀛樺偍鐨勬暟锟???
+	input wire[`AluOpBus]			aluop_i,	// mem阶段指令要进行的运算子类型
+	input wire[`RegBus]				mem_addr_i,	// mem阶段指令访存address
+	input wire[`RegBus]				reg2_i,		// mem阶段访存数据
 	input wire[`InstAddrBus]		pc_i,
 	
-	//閫佸埌鍐欏洖闃舵鐨勪俊锟???
-	output reg[`RegAddrBus]     	wd_o,
-	output reg[`RegBus]             wreg_o,
-	output reg[`RegBus]				wdata_o,
+	// 送到wb阶段的信号
+	output reg[`RegAddrBus]     	wd_o,          // mem阶段指令写目的寄存器号
+	output reg[`RegBus]             wreg_o,       // mem阶段指令写寄存器使能
+	output reg[`RegBus]				wdata_o,      // mem阶段指令写入目的寄存器数据
 
-	output reg[`RegBus]				mem_addr_o,	//瑕佽闂殑鏁版嵁瀛樺偍鍣ㄧ殑鍦板潃
-	output reg[3:0]					mem_we_o,	//鏄惁鍐欐搷锟???
-	output reg[`RegBus]				mem_data_o, //瑕佸啓鍏ユ暟鎹瓨鍌ㄥ櫒鐨勬暟锟???
-	output reg						mem_ce_o,	//鏁版嵁瀛樺偍鍣ㄤ娇鑳戒俊锟???
-	output wire[`InstAddrBus]		pc_o,
-	output wire[`AluOpBus]			aluop_o,
-	output reg 						stallreq
+    // 送到ram
+	output reg[`RegBus]				mem_addr_o,	// 访存address
+	output reg[3:0]					mem_we_o,	// 访存写使能
+	output reg[`RegBus]				mem_data_o, // 访存写数据
+	output reg						mem_ce_o,	// ram使能信号
+	
+	
+	output wire[`InstAddrBus]		pc_o,       // mem阶段指令pc
+	output wire[`AluOpBus]			aluop_o,    // mem阶段指令运算子类型
+	output reg 						stallreq    // mem阶段暂停流水线控制信号
 
 );
 

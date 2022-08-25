@@ -30,6 +30,8 @@ module ex_mem(
     always @(posedge clk) begin
         if(rst == `RstDisable) begin
             
+        end else begin
+        
         end
     end
 
