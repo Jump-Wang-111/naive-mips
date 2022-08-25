@@ -29,9 +29,13 @@ module ex_mem(
 
     always @(posedge clk) begin
         if(rst == `RstDisable) begin
-            
+            mem_wd       <= `ZeroRegAddr;
+            mem_wreg     <= `WriteDisable;
+            mem_wdata    <= `ZeroWord;
         end else begin
-        
+            mem_wd       <= ex_wd;
+            mem_wreg     <= ex_wreg;
+            mem_wdata    <= ex_wdata;
         end
     end
 
