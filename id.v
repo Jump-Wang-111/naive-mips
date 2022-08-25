@@ -95,6 +95,72 @@ module id(
 			inst_o <= inst_i;
 			pc_o <= pc_i;
 			case(opcode)
+				`INST_ORI :	begin
+
+				end
+				`INST_ANDI :	begin
+
+				end
+				`INST_XORI :	begin
+
+				end
+				`INST_LUI :	begin
+
+				end
+				`INST_ADDI :	begin
+
+				end
+				`INST_ADDIU :	begin
+
+				end
+				`INST_SLTI :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
+				`INST_ :	begin
+
+				end
 				`INST_ :	begin
 
 				end
