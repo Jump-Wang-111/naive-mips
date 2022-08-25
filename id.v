@@ -116,55 +116,141 @@ module id(
 				`INST_SLTI :	begin
 
 				end
-				`INST_ :	begin
+				`INST_SLTIU :	begin
 
 				end
-				`INST_ :	begin
+				`INST_J :	begin
 
 				end
-				`INST_ :	begin
+				`INST_JAL :	begin
 
 				end
-				`INST_ :	begin
+				`INST_BEQ_B :	begin
+					if(rs == RS_B && RT == RT_B) begin
+
+					end else begin // BEQ
+
+					end
+				end
+				`INST_BGTZ :	begin
 
 				end
-				`INST_ :	begin
+				`INST_BLEZ :	begin
 
 				end
-				`INST_ :	begin
+				`INST_BNE :	begin
 
 				end
-				`INST_ :	begin
+				`INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL :	begin
+					if(rt == RT_BLTZ) begin
+
+					end else if(rt == RT_BLTZAL) begin
+
+					end else if (rt == RT_BGEZ) begin
+					
+					end else begin // if (rt == RT_BGEZAL_BAL) 
+						if(rs == RS_BAL) begin // BAL
+
+						end else begin // BGEZAL
+
+						end
+					end
+				end
+				`INST_LW :	begin
 
 				end
-				`INST_ :	begin
+				`INST_SW :	begin
 
 				end
-				`INST_ :	begin
+				`INST_LB :	begin
 
 				end
-				`INST_ :	begin
+				`INST_SB :	begin
 
 				end
-				`INST_ :	begin
+				`INST_LH :	begin
 
 				end
-				`INST_ :	begin
+				`INST_SH :	begin
 
 				end
-				`INST_ :	begin
+				`INST_SPECIAL : begin
+					case (func) 
+						`FUNC_AND : begin
 
-				end
-				`INST_ :	begin
+						end
+						`FUNC_NOR : begin
 
-				end
-				`INST_ :	begin
+						end
+						`FUNC_OR : begin
 
-				end
-				`INST_ :	begin
+						end
+						`FUNC_XOR : begin
 
+						end
+						`FUNC_SLL : begin
+
+						end
+						`FUNC_SLLV : begin
+
+						end
+						`FUNC_SRL : begin
+
+						end
+						`FUNC_SRLV : begin
+
+						end
+						`FUNC_SRA : begin
+
+						end
+						`FUNC_SRAV : begin
+
+						end
+						`FUNC_NOP : begin
+
+						end
+						`FUNC_SSNOP : begin
+
+						end
+						`FUNC_SYNC : begin
+
+						end
+						`FUNC_MOVN : begin
+
+						end
+						`FUNC_MOVZ : begin
+
+						end
+						`FUNC_ADD : begin
+
+						end
+						`FUNC_ADDU : begin
+
+						end
+						`FUNC_SUB : begin
+
+						end
+						`FUNC_SUBU : begin
+
+						end
+						`FUNC_SLT : begin
+
+						end
+						`FUNC_SLTU : begin
+
+						end
+						`FUNC_JR : begin
+
+						end
+						`FUNC_JALR : begin
+
+						end
+						default : begin
+
+						end
+					endcase
 				end
-				default begin
+				default : begin
 
 				end
 			endcase
