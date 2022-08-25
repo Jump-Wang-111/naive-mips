@@ -358,6 +358,7 @@ module mycpu_top(
 	
 	wire rst = rstn;
 
+	// declare part
 	// pc
 	wire 					pc_branch_flag;            		// 
 	wire[`InstAddrBus]		pc_branch_target_address;  		// 
@@ -367,6 +368,94 @@ module mycpu_top(
 	wire[`InstAddrBus]   	pc_three;                  		//
 	wire                  	pc_ce;                       	// inst memory enable
 
+	// if_id 
+	wire [`InstAddrBus]      if_pc;
+	wire [`InstBus]          if_inst;
+	wire                     if_id_stall;
+	wire                     if_id_stall_aluop;
+
+	// id
+	wire[`InstAddrBus]		id_pc_i;
+	wire[`InstBus]      	id_inst_i;
+	wire[`RegBus]           id_reg1_data_i;
+	wire[`RegBus]           id_reg2_data_i;
+	wire                    id_reg1_read_o;
+	wire                    id_reg2_read_o;
+	wire[`RegAddrBus]       id_reg1_addr_o;  
+	wire[`RegAddrBus] 		id_reg2_addr_o;
+	
+	wire[`AluOpBus]         id_aluop_o;
+	wire[`AluSelBus]        id_alusel_o;
+	wire[`RegBus]           id_reg1_o;
+	wire[`RegBus]           id_reg2_o;
+	wire[`RegAddrBus]       id_wd_o;
+	wire[`WriteBus]         id_wreg_o;
+	wire[`RegBus] 		  	id_return_addr_o;
+
+	wire                    id_branch_flag_o;
+	wire[`InstAddrBus]	  	id_branch_target_address_o;
+
+	wire[`RegBus]		  	id_inst_o;
+	wire[`InstAddrBus]	  	id_pc_o;
+	wire 			      	id_stallreq;
+
+	// regfile
+	wire[`WriteBus]		  	regfile_we;       
+	wire[`RegAddrBus]		regfile_waddr;    
+	wire[`RegBus]			regfile_wdata;   
+	
+	wire					regfile_re1;      
+	wire[`RegAddrBus]		regfile_raddr1;   
+	wire[`RegBus]           regfile_rdata1;   
+	
+	
+	wire					regfile_re2;
+	wire[`RegAddrBus]		regfile_raddr2;
+	wire[`RegBus]           regfile_rdata2;
+
+	// ex
+	wire[`AluOpBus]         	ex_aluop_i;
+	wire[`AluSelBus]        	ex_alusel_i;
+	wire[`RegBus]           	ex_reg1_i;
+	wire[`RegBus]           	ex_reg2_i;
+	wire[`RegAddrBus]       	ex_wd_i;
+	wire[`WriteBus]           	ex_wreg_i;
+	wire[`RegBus] 				ex_return_addr_i; 
+	wire[`RegBus]				ex_inst_i;
+	wire[`InstAddrBus]			ex_pc_i;
+
+	wire[`RegAddrBus]        	ex_wd_o;
+	wire[`WriteBus]          	ex_wreg_o;
+	wire[`RegBus]			    ex_wdata_o;
+	
+	wire[`AluOpBus]				ex_aluop_o;
+	wire[`RegBus]				ex_mem_addr_o;
+	wire[`RegBus]				ex_reg2_o;
+	wire[`InstAddrBus]			ex_pc_o;
+	wire 						ex_stallreq;
+
+	//mem
+	wire[`RegAddrBus]       	mem_wd_i;
+	wire[`RegBus]             	mem_wreg_i;
+	wire[`RegBus]				mem_wdata_i;
+	
+	wire[`AluOpBus]				mem_aluop_i;
+	wire[`RegBus]				mem_addr_i;
+	wire[`RegBus]				mem_reg2_i;
+	wire[`InstAddrBus]			mem_pc_i;
+
+	wire[`RegAddrBus]     		mem_wd_o;
+	wire[`RegBus]             	mem_wreg_o;
+	wire[`RegBus]				mem_wdata_o;
+
+	wire[`RegBus]				mem_data_addr_o;
+	
+	wire[`InstAddrBus]			mem_pc_o;
+	wire[`AluOpBus]				mem_aluop_o;
+	wire 						mem_stallreq;
+
+	// example part
+	// pc
 	pc_reg pc_reg0(
 		.clk(clk),
 		.rst(rst),
@@ -381,53 +470,67 @@ module mycpu_top(
 	);
 
 	assign inst_sram_addr = pc_pc;
+	assign if_pc = pc_pc;
+	assign if_inst = inst_sram_rdata;
 
 	//if_id
-	wire [`InstAddrBus]      if_id_if_pc;
-	wire [`InstBus]          if_id_if_inst;
-	wire                     if_id_stall;
-	wire                     if_id_stall_aluop;
-	wire [`InstAddrBus]      if_id_id_pc;
-	wire [`InstBus]          if_id_id_inst; 
-
-	assign if_id_id_pc = pc_pc;
-	assign if_id_if_inst = inst_sram_rdata;
-
 	if_id if_id0(
 		.clk(clk),
 		.rst(rst),
 
-		.if_pc(if_id_if_pc),
-		.if_inst(if_id_if_inst),
+		.if_pc(if_pc),
+		.if_inst(if_inst),
 		.stall(if_id_stall),
 		.stall_aluop(if_id_stall_aluop),
 
-		.id_pc(if_id_id_pc),
-		.id_inst(if_id_id_inst)      	
+		.id_pc(id_pc_i),
+		.id_inst(id_inst_i)      	
 	);
 
-	wire [`InstBus] inst = if_id_id_inst;
-
 	// id
+	id id0(
+		.rst(rst),
+		.pc_i(id_pc_i),
+		.inst_i(id_inst_i),
 
+		.ex_wreg_i(ex_wreg_o),
+		.ex_wdata_i(ex_wdata_o),
+		.ex_wd_i(ex_wd_o),
+
+		.mem_wreg_i(mem_wreg_o),
+		.mem_wdata_i(mem_wdata_o),
+		.mem_wd_i(mem_wd_o),
+
+		.reg1_data_i(id_reg1_data_i),
+		.reg2_data_i(id_reg2_data_i),
+
+		.reg1_read_o(id_reg1_read_o),
+		.reg2_read_o(id_reg2_read_o), 	  
+		.reg1_addr_o(id_reg1_addr_o),
+		.reg2_addr_o(id_reg2_addr_o), 
+	  
+		.aluop_o(id_aluop_o),
+		.alusel_o(id_alusel_o),
+		.reg1_o(id_reg1_o),
+		.reg2_o(id_reg2_o),
+		.wd_o(id_wd_o),
+		.wreg_o(id_wreg_o),
+		.return_addr_o(id_return_addr_o),
+
+		.branch_flag_o(id_branch_flag_o),			
+		.branch_target_address_o(id_branch_target_address_o),		
+	
+		.inst_o(id_inst_o),
+		.pc_o(id_pc_o),
+		.stallreq(id_stallreq)
+	);
+
+	assign regfile_re1 = id_reg1_read_o;
+	assign regfile_re2 = id_reg2_read_o;
+	assign regfile_raddr1 = id_reg1_addr_o;
+	assign regfile_raddr2 = id_reg2_addr_o;
 
 	// regfile
-
-	wire[`WriteBus]		  	regfile_we;       
-	wire[`RegAddrBus]		regfile_waddr;    
-	wire[`RegBus]			regfile_wdata;   
-	
-	wire					regfile_re1;      
-	wire[`RegAddrBus]		regfile_raddr1;   
-	wire[`RegBus]           regfile_rdata1;   
-	
-	
-	wire					regfile_re2;
-	wire[`RegAddrBus]		regfile_raddr2;
-	wire[`RegBus]           regfile_rdata2;
-
-	
-
 	regfile regfile1(
 		.clk (clk),
 		.rst (rst),
@@ -448,20 +551,133 @@ module mycpu_top(
 
 	);
 
-
 	// id_ex
+	id_ex id_ex0(
+		.clk(clk),
+		.rst(rst),
+		
+		.id_aluop(id_aluop_o),
+		.id_alusel(id_alusel_o),
+		.id_reg1(id_reg1_o),
+		.id_reg2(id_reg2_o),
+		.id_wd(id_wd_o),
+		.id_wreg(id_wreg_o),
+		.id_return_addr(id_return_addr_o),
+		.id_inst(id_inst_o),
+		.id_pc(id_pc_o),
+	
+		.ex_aluop(ex_aluop_i),
+		.ex_alusel(ex_alusel_i),
+		.ex_reg1(ex_reg1_i),
+		.ex_reg2(ex_reg2_i),
+		.ex_wd(ex_wd_i),
+		.ex_wreg(ex_wreg_i),
+		.ex_return_addr(ex_return_addr_i),
+		.ex_inst(ex_inst_i),
+		.ex_pc(ex_pc_i)
+	);	
 
 	// ex
+	ex ex0(
+		.rst(rst),
+	
+		.aluop_i(ex_aluop_i),
+		.alusel_i(ex_alusel_i),
+		.reg1_i(ex_reg1_i),
+		.reg2_i(ex_reg2_i),
+		.wd_i(ex_wd_i),
+		.wreg_i(ex_wreg_i),
+		.return_addr_i(ex_return_addr_i),
+		.inst_i(ex_inst_i),
+		.pc_i(ex_pc_i),
+	  
+		.wd_o(ex_wd_o),
+		.wreg_o(ex_wreg_o),
+		.wdata_o(ex_wdata_o),
+
+		.aluop_o(ex_aluop_o),
+		.mem_addr_o(ex_mem_addr_o),
+		.reg2_o(ex_reg2_o),
+		.pc_o(ex_pc_o),
+		.stallreq(ex_stallreq)
+	);
 
 	// ex_mem
+	ex_mem ex_mem0(
+		.clk(clk),
+		.rst(rst),
+	  
+		.ex_wd(ex_wd_o),
+		.ex_wreg(ex_wreg_o),
+		.ex_wdata(ex_wdata_o),
+		.ex_aluop(ex_aluop_o),
+		.ex_mem_addr(ex_mem_addr_o),
+		.ex_reg2(ex_reg2_o),
+		.ex_pc(ex_pc_o),
+
+		.mem_wd(mem_wd_i),
+		.mem_wreg(mem_wreg_i),
+		.mem_wdata(mem_wdata_i),
+		.mem_aluop(aluop1),
+		.mem_mem_addr(mem_addr1),
+		.mem_reg2(reg21),
+		.mem_pc(pc4)				       	
+	);
 
 	// mem
+	assign data_sram_addr = {3'b0,mem_data_addr_o[28:0]};
+
+	mem mem0(
+		.rst(rst),
+	
+		.wd_i(mem_wd_i),
+		.wreg_i(mem_wreg_i),
+		.wdata_i(mem_wdata_i),
+		.aluop_i(mem_aluop_i),
+		.mem_addr_i(mem_addr_i),
+		.reg2_i(mem_reg2_i),
+		.pc_i(mem_pc_i),
+
+		.wd_o(mem_wd_o),
+		.wreg_o(mem_wreg_o),
+		.wdata_o(mem_wdata_o),
+
+		.mem_addr_o(mem_data_addr_o),
+		.mem_we_o(data_sram_wen),
+		.mem_data_o(data_sram_wdata),
+		.mem_ce_o(data_sram_en),
+		.aluop_o(mem_aluop_o),
+		.pc_o(mem_pc_o),
+		.stallreq(mem_stallreq)
+	);
 
 	// mem_wb
+	wire[`RegAddrBus]      		wb_wd_i;
+	wire[`WriteBus]          	wb_wreg_i;
+	wire[`RegBus]				wb_wdata_i;
+	wire[`InstAddrBus]			wb_pc_i;
+	wire[`AluOpBus]				wb_aluop_stall_i;  
+
+	mem_wb mem_wb0(
+		.clk(clk),
+		.rst(rst),
+
+		.mem_wd(mem_wd_o),
+		.mem_wreg(mem_wreg_o),
+		.mem_wdata(mem_wdata_o),
+		.mem_pc(mem_pc_o),
+		.mem_aluop(mem_aluop_o),
+	
+		.wb_wd(wb_wd_i),
+		.wb_wreg(wb_wreg_i),
+		.wb_wdata(wb_wdata_i),
+		.wb_pc(wd_pc_i),
+		.wb_aluop_stall(wb_aluop_stall_i)
+									       	
+	);
 
 	// wb
 
-	
 
 
 endmodule
