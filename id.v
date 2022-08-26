@@ -41,8 +41,8 @@ module id(
 	output reg                    branch_flag_o,           	// 是否要跳转
 	output reg[`InstAddrBus]	  branch_target_address_o,  // 跳转的pc值
 
-	output wire[`RegBus]		  inst_o,
-	output wire[`InstAddrBus]	  pc_o,
+	output reg[`RegBus]		  inst_o,
+	output reg[`InstAddrBus]	  pc_o,
 	output reg 			      	  stallreq
 			
 );
@@ -59,7 +59,6 @@ module id(
 	wire [31:0] imm26_signe = {6{imm16[25]}, imm26};
 	wire [31:0] imm26_unsigne = {6'b0, imm26};
 	
-	assign stallreq = `NoStop;
 
 	always @(*) begin
 		if(rst == `RstDisable) begin
@@ -78,6 +77,7 @@ module id(
 			branch_target_address_o <= `ZeroWord;
 			inst_o <= `ZeroWord;
 			pc_o <= `InitialPc;
+			stallreq <= `NoStop;
 		end else begin
 			reg1_read_o <= `ReadDisable;
 			reg2_read_o <= `ReadDisable;
@@ -94,6 +94,7 @@ module id(
 			/* */branch_target_address_o <= `ZeroWord;
 			inst_o <= inst_i;
 			pc_o <= pc_i;
+			stallreq <= `NoStop;
 			case(opcode)
 				`INST_ORI :	begin
 					reg1_read_o <= `ReadEnable;
@@ -153,7 +154,7 @@ module id(
 
 				end
 				`INST_BEQ_B :	begin
-					if(rs == RS_B && RT == RT_B) begin
+					if(rs == `RS_B && rt == `RT_B) begin
 
 					end else begin // BEQ
 
@@ -169,14 +170,14 @@ module id(
 
 				end
 				`INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL :	begin
-					if(rt == RT_BLTZ) begin
+					if(rt == `RT_BLTZ) begin
 
-					end else if(rt == RT_BLTZAL) begin
+					end else if(rt == `RT_BLTZAL) begin
 
-					end else if (rt == RT_BGEZ) begin
+					end else if (rt == `RT_BGEZ) begin
 					
-					end else begin // if (rt == RT_BGEZAL_BAL) 
-						if(rs == RS_BAL) begin // BAL
+					end else begin // if (rt == `RT_BGEZAL_BAL) 
+						if(rs == `RS_BAL) begin // BAL
 
 						end else begin // BGEZAL
 
@@ -280,9 +281,6 @@ module id(
 				default : begin
 
 				end
-			default : begin
-
-			end
 			endcase
 		end
 	end

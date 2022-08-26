@@ -465,8 +465,8 @@ module mycpu_top(
 		.stall(pc_stall),
 
 		.pc(pc_pc),
-		.pc_three(pc_three)
-		.ce(inst_sram_en),
+		.pc_three(pc_three),
+		.ce(inst_sram_en)
 	);
 
 	assign inst_sram_addr = pc_pc;

@@ -129,11 +129,8 @@ module ex(
 				end
 				`ALU_OP_SH :	begin
 
-				end
-				`ALU_OP_SPECIAL : begin
-				
-				end
-				`ALU_OP_AND : begin
+			end
+			`ALU_OP_AND : begin
 
 				end
 				`ALU_OP_NOR : begin
@@ -204,12 +201,7 @@ module ex(
 				end
 				default : begin
 
-				end
-				default : begin
-
-				end
-			endcase
-		end
-
+			end
+		endcase
 	end
 endmodule
