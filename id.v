@@ -153,7 +153,7 @@ module id(
 					wreg_o <= `WriteEnable;
 				end
 				`INST_LUI :	begin
-
+					
 				end
 				`INST_ADDI :	begin
 
@@ -228,13 +228,37 @@ module id(
 
 						end
 						`FUNC_NOR : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_NOR;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_OR : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_OR;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_XOR : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_XOR;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SLL : begin
 

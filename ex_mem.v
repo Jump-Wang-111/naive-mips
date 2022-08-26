@@ -23,11 +23,11 @@ module ex_mem(
 	output reg[`AluOpBus]			mem_aluop,
 	output reg[`RegBus]				mem_mem_addr,
 	output reg[`RegBus]				mem_reg2,
-	output reg[`InstAddrBus]		mem_pc
+	output wire[`InstAddrBus]		mem_pc
 	
 );
 
-	assign ex_pc = mem_pc;
+	assign mem_pc = ex_pc;
 
     always @(posedge clk) begin
         if(rst == `RstDisable) begin

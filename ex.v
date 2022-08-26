@@ -60,7 +60,7 @@ module ex(
 					wdata_o <= reg1_i ^ reg2_i;
 				end
 				`ALU_OP_LUI :	begin
-
+					
 				end
 				`ALU_OP_ADDI :	begin
 
@@ -132,13 +132,13 @@ module ex(
 
 				end
 				`ALU_OP_NOR : begin
-
+					rd <= !(reg1_o | reg2_o);
 				end
 				`ALU_OP_OR : begin
-
+					rd <= reg1_o | reg2_o;
 				end
 				`ALU_OP_XOR : begin
-
+					rd <= reg1_o ^ reg2_o;
 				end
 				`ALU_OP_SLL : begin
 
