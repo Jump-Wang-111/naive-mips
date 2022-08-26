@@ -12,6 +12,10 @@
 `define ReadEnable  1'b1
 `define ReadDisable 1'b0
 
+`define ExConflict      2'b01
+`define MemConflict     2'b10
+`define NoConflict      2'b00
+
 `define AluOpBus            7:0
 `define AluSelBus           2:0
 `define InstValid           1'b0

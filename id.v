@@ -46,6 +46,7 @@ module id(
 	output reg 			      	  stallreq
 			
 );
+
 	wire [5:0] opcode = inst_i[31:26];
 	wire [4:0] rs = inst_i[25:21];
 	wire [4:0] rt = inst_i[20:16];
@@ -58,6 +59,9 @@ module id(
 	wire [31:0] imm16_unsigne = {16'b0, imm16};
 	wire [31:0] imm26_signe = {{6{imm16[25]}}, imm26};
 	wire [31:0] imm26_unsigne = {6'b0, imm26};
+
+	reg [1:0]		reg1_conflict_flag;
+	reg [1:0]		reg2_conflict_flag;
 	
 	assign pc_o = pc_i;
 
@@ -78,7 +82,24 @@ module id(
 			branch_target_address_o <= `InitialPc;
 			inst_o <= `ZeroWord;
 			stallreq <= `NoStop;
+			reg1_conflict_flag <= `NoConflict;
+			reg2_conflict_flag <= `NoConflict;
 		end else begin
+
+			if(reg1_read_o == `ReadEnable && ex_wreg_i == `WriteEnable && reg1_addr_o == ex_wd_i) begin
+				reg1_conflict_flag <= `ExConflict;
+			end
+			else if(reg1_read_o == `ReadEnable && mem_wreg_i == `WriteEnable && reg1_addr_o == mem_wd_i) begin
+				reg1_conflict_flag <= `MemConflict;
+			end
+
+			if(reg2_read_o == `ReadEnable && ex_wreg_i == `WriteEnable && reg2_addr_o == ex_wd_i) begin
+				reg2_conflict_flag <= `ExConflict;
+			end
+			else if(reg2_read_o == `ReadEnable && mem_wreg_i == `WriteEnable && reg2_addr_o == mem_wd_i) begin
+				reg2_conflict_flag <= `MemConflict;
+			end
+
 			reg1_read_o <= `ReadDisable;
 			reg2_read_o <= `ReadDisable;
 			reg1_addr_o <= `ZeroRegAddr;
@@ -281,6 +302,24 @@ module id(
 
 				end
 			endcase
+
+			if(reg1_conflict_flag == `ExConflict) begin
+				reg1_o <= ex_wdata_i;
+				reg1_conflict_flag <= `NoConflict;
+			end
+			else if(reg1_conflict_flag == `MemConflict) begin
+				reg1_o <= mem_wdata_i;
+				reg1_conflict_flag <= `NoConflict;
+			end
+
+			if(reg2_conflict_flag == `ExConflict) begin
+				reg2_o <= ex_wdata_i;
+				reg2_conflict_flag <= `NoConflict;
+			end
+			else if(reg2_conflict_flag == `MemConflict) begin
+				reg2_o <= mem_wdata_i;
+				reg2_conflict_flag <= `NoConflict;
+			end
 		end
 	end
 

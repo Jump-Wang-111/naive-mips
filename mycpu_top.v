@@ -496,10 +496,12 @@ module mycpu_top(
 		.pc_i(id_pc_i),
 		.inst_i(id_inst_i),
 
+		// solve data conflict
 		.ex_wreg_i(ex_wreg_o),
 		.ex_wdata_i(ex_wdata_o),
 		.ex_wd_i(ex_wd_o),
 
+		// solve data conflict
 		.mem_wreg_i(mem_wreg_o),
 		.mem_wdata_i(mem_wdata_o),
 		.mem_wd_i(mem_wd_o),
