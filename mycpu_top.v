@@ -321,7 +321,7 @@ module mycpu_top(
 									       	
 // 	);
 
-// 	//从wb_ram模块直接送到寄存�??
+// 	//从wb_ram模块直接送到寄存�??
 // 	wire[`RegAddrBus] wd; 
 // 	wire[`WriteBus] we;
 // 	wire[`RegBus] wdata;

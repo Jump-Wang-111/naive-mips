@@ -24,11 +24,11 @@ module ex(
 	output reg[`RegBus]			    mem_addr_o,    // ???address
 	output reg[`RegBus]			    reg2_o,        // ex??¦Å?2????????
 
-	output reg[`InstAddrBus]		pc_o,          // ex??????pc
+	output wire[`InstAddrBus]		pc_o,          // ex??????pc
 	output reg 						stallreq       // ex??????????????????
 	
 );
-	
+	assign pc_o = pc_i;
 	always @(*) begin
 
 		if(rst == `RstDisable) begin
@@ -38,7 +38,6 @@ module ex(
 			aluop_o 	<= `ALU_OP_NOP;
 			mem_addr_o 	<= `ZeroWord;
 			reg2_o 		<= `ZeroWord;
-			pc_o 		<= `InitialPc;
 			stallreq 	<= `NoStop;
 		end
 		else begin
@@ -48,7 +47,6 @@ module ex(
 			aluop_o 	<= aluop_i;
 			mem_addr_o 	<= `ZeroWord;
 			reg2_o 		<= reg2_i;
-			pc_o 		<= pc_i;
 			stallreq 	<= `NoStop;
 
 			case(aluop_i)

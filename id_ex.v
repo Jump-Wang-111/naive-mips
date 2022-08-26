@@ -28,8 +28,10 @@ module id_ex(
 	output reg[`WriteBus]           ex_wreg,
 	output reg[`RegBus]				ex_return_addr,
 	output reg[`RegBus]				ex_inst,
-	output reg[`RegBus]				ex_pc
+	output wire[`RegBus]			ex_pc
 );
+
+	assign ex_pc = id_pc;
 
     always @(posedge clk) begin
         if(rst == `RstDisable) begin
@@ -41,7 +43,6 @@ module id_ex(
             ex_wreg <= `WriteDisable;
             ex_return_addr <= `ZeroWord;
             ex_inst <= `ZeroWord;
-            ex_pc <= 32'hbfc00000;
         end else begin
             ex_aluop <= id_aluop;
 	        ex_alusel <= id_alusel;
@@ -51,7 +52,6 @@ module id_ex(
             ex_wreg <= id_wreg;
             ex_return_addr <= id_return_addr;
             ex_inst <= id_inst;
-            ex_pc <= id_pc;
         end
     end
 

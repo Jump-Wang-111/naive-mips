@@ -26,24 +26,24 @@ module mem(
 	output reg						mem_ce_o,	// ram使能信号
 	
 	
-	output reg[`InstAddrBus]		pc_o,       // mem阶段指令pc
+	output wire[`InstAddrBus]		pc_o,       // mem阶段指令pc
 	output reg[`AluOpBus]			aluop_o,    // mem阶段指令运算子类型
 	output reg 						stallreq    // mem阶段暂停流水线控制信号
 
 );
     
+	assign pc_o = pc_i;
+
     always @(*) begin
         if(rst == `RstDisable) begin
             wd_o <= `ZeroRegAddr;
             wreg_o <= `WriteDisable;
             wdata_o <= `ZeroWord;
-            pc_o <= `InitialPc;
             aluop_o <= `ALU_OP_NOP;
         end else begin
             wd_o <= wd_i;
             wreg_o <= wreg_i;
             wdata_o <= wdata_i;
-            pc_o <= pc_i;
             aluop_o <= aluop_i;
         end
        
