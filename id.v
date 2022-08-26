@@ -54,10 +54,10 @@ module id(
 	wire [5:0] func = inst_i[5:0];
 	wire [15:0] imm16 = inst_i[15:0];
 	wire [25:0] imm26 = inst_i[25:0];
-	wire [31:0] imm16_singe = {16{imm16[15]}, imm16};
-	wire [31:0] imm16_unsinge = {16'b0, imm16};
-	wire [31:0] imm26_singe = {6{imm16[25]}, imm26};
-	wire [31:0] imm26_unsinge = {6'b0, imm26};
+	wire [31:0] imm16_signe = {16{imm16[15]}, imm16};
+	wire [31:0] imm16_unsigne = {16'b0, imm16};
+	wire [31:0] imm26_signe = {6{imm16[25]}, imm26};
+	wire [31:0] imm26_unsigne = {6'b0, imm26};
 	
 	assign stallreq = `NoStop;
 
@@ -96,13 +96,40 @@ module id(
 			pc_o <= pc_i;
 			case(opcode)
 				`INST_ORI :	begin
-					
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= rt;
+					aluop_o <= `ALU_OP_ORI;
+					alusel_o <= `ALU_RES_LOGIC;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_ANDI :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= rt;
+					aluop_o <= `ALU_OP_ANDI;
+					alusel_o <= `ALU_RES_LOGIC;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_XORI :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= rt;
+					aluop_o <= `ALU_OP_XORI;
+					alusel_o <= `ALU_RES_LOGIC;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_LUI :	begin
 

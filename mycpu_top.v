@@ -15,7 +15,7 @@ module mycpu_top(
 
 
 	output 								data_sram_en,		
-	output [3:0]						data_sram_wen,		// ��Ч�ֽ�
+	output [3:0]						data_sram_wen,		// ��Ч�ֽ�
 	output [31:0]						data_sram_addr, 	
 	output [31:0]						data_sram_wdata,	
 	input  [31:0]						data_sram_rdata,	
@@ -321,7 +321,7 @@ module mycpu_top(
 									       	
 // 	);
 
-// 	//从wb_ram模块直接送到寄存�?
+// 	//从wb_ram模块直接送到寄存�?
 // 	wire[`RegAddrBus] wd; 
 // 	wire[`WriteBus] we;
 // 	wire[`RegBus] wdata;
@@ -618,10 +618,10 @@ module mycpu_top(
 		.mem_wd(mem_wd_i),
 		.mem_wreg(mem_wreg_i),
 		.mem_wdata(mem_wdata_i),
-		.mem_aluop(aluop1),
-		.mem_mem_addr(mem_addr1),
-		.mem_reg2(reg21),
-		.mem_pc(pc4)				       	
+		.mem_aluop(mem_aluop_i),
+		.mem_mem_addr(mem_addr_i),
+		.mem_reg2(mem_reg2_i),
+		.mem_pc(mem_pc_i)				       	
 	);
 
 	// mem
@@ -677,7 +677,9 @@ module mycpu_top(
 	);
 
 	// wb
-
+	assign regfile_we = wb_wreg_i;
+	assign regfile_waddr = wb_wd_i;
+	assign regfile_wdata = wb_wdata_i;
 
 
 endmodule
