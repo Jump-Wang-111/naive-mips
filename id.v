@@ -41,7 +41,7 @@ module id(
 	output reg                    branch_flag_o,           	// 是否要跳转
 	output reg[`InstAddrBus]	  branch_target_address_o,  // 跳转的pc值
 
-	output reg[`RegBus]		  inst_o,
+	output reg[`RegBus]		  	  inst_o,
 	output reg[`InstAddrBus]	  pc_o,
 	output reg 			      	  stallreq
 			
@@ -54,9 +54,9 @@ module id(
 	wire [5:0] func = inst_i[5:0];
 	wire [15:0] imm16 = inst_i[15:0];
 	wire [25:0] imm26 = inst_i[25:0];
-	wire [31:0] imm16_signe = {16{imm16[15]}, imm16};
+	wire [31:0] imm16_signe = {{16{imm16[15]}}, imm16};
 	wire [31:0] imm16_unsigne = {16'b0, imm16};
-	wire [31:0] imm26_signe = {6{imm16[25]}, imm26};
+	wire [31:0] imm26_signe = {{6{imm16[25]}}, imm26};
 	wire [31:0] imm26_unsigne = {6'b0, imm26};
 	
 

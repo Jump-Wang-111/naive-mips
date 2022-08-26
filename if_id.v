@@ -12,18 +12,16 @@ module if_id(
 	input  wire                     stall_aluop,
     
 	output reg  [`InstAddrBus]      id_pc,
-	output reg  [`InstBus]          id_inst
+	output wire  [`InstBus]         id_inst
 	
     );
-
+    assign id_inst = if_inst;
 	always @(posedge clk) begin
         if(rst == `RstDisable) begin
-            id_pc   <= `ZeroWord;
-            id_inst <= `ZeroWord;
+            id_pc   <= `InitialPc;
         end
         else begin
             id_pc   <= if_pc;
-            id_inst <= if_inst;
         end
     end
 

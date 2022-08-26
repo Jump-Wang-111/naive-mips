@@ -32,10 +32,12 @@ module ex_mem(
             mem_wd       <= `ZeroRegAddr;
             mem_wreg     <= `WriteDisable;
             mem_wdata    <= `ZeroWord;
+            mem_pc       <= `InitialPc;
         end else begin
             mem_wd       <= ex_wd;
             mem_wreg     <= ex_wreg;
             mem_wdata    <= ex_wdata;
+            mem_pc       <= ex_pc;
         end
     end
 
