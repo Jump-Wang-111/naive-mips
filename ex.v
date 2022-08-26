@@ -20,11 +20,11 @@ module ex(
 	output reg[`WriteBus]           wreg_o,        // ex阶段指令写寄存器使能
 	output reg[`RegBus]			    wdata_o,	   // ex阶段指令写入目的寄存器数据
 
-	output wire[`AluOpBus]			aluop_o,       // ex阶段指令运算种子类型
-	output wire[`RegBus]			mem_addr_o,    // 访存address
-	output wire[`RegBus]			reg2_o,        // ex阶段第2个操作数
+	output reg[`AluOpBus]			aluop_o,       // ex阶段指令运算种子类型
+	output reg[`RegBus]			    mem_addr_o,    // 访存address
+	output reg[`RegBus]			    reg2_o,        // ex阶段第2个操作数
 
-	output wire[`InstAddrBus]		pc_o,          // ex阶段指令pc
+	output reg[`InstAddrBus]		pc_o,          // ex阶段指令pc
 	output reg 						stallreq       // ex阶段流水线暂停控制信号
 	
 );
@@ -200,8 +200,8 @@ module ex(
 
 				end
 				default : begin
-
-			end
-		endcase
+			    end
+		  endcase
+	   end
 	end
 endmodule

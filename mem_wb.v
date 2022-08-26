@@ -26,8 +26,10 @@ module mem_wb(
             wb_wd       <= `ZeroRegAddr;
             wb_wreg     <= `WriteDisable;
             wb_wdata    <= `ZeroWord;
+            wb_pc       <= `InitialPc;
         end 
         else begin
+            wb_pc       <= mem_pc;
             wb_wd       <= mem_wd;
             wb_wreg     <= mem_wreg;
             wb_wdata    <= mem_wdata;

@@ -3,7 +3,7 @@
 module mycpu_top(
 
 	input wire							clk,
-	input wire							rstn,
+	input wire							resetn,
 	
 	input [5:0]							int,				//interrupt,high active
 
@@ -321,7 +321,7 @@ module mycpu_top(
 									       	
 // 	);
 
-// 	//从wb_ram模块直接送到寄存�?
+// 	//从wb_ram模块直接送到寄存�??
 // 	wire[`RegAddrBus] wd; 
 // 	wire[`WriteBus] we;
 // 	wire[`RegBus] wdata;
@@ -356,7 +356,7 @@ module mycpu_top(
 // 	);
 
 	
-	wire rst = rstn;
+	wire rst = resetn;
 
 	// declare part
 	// pc
@@ -436,7 +436,7 @@ module mycpu_top(
 
 	//mem
 	wire[`RegAddrBus]       	mem_wd_i;
-	wire[`RegBus]             	mem_wreg_i;
+	wire[`WriteBus]             mem_wreg_i;
 	wire[`RegBus]				mem_wdata_i;
 	
 	wire[`AluOpBus]				mem_aluop_i;
@@ -445,7 +445,7 @@ module mycpu_top(
 	wire[`InstAddrBus]			mem_pc_i;
 
 	wire[`RegAddrBus]     		mem_wd_o;
-	wire[`RegBus]             	mem_wreg_o;
+    wire[`WriteBus]             mem_wreg_o;
 	wire[`RegBus]				mem_wdata_o;
 
 	wire[`RegBus]				mem_data_addr_o;
@@ -486,6 +486,9 @@ module mycpu_top(
 		.id_pc(id_pc_i),
 		.id_inst(id_inst_i)      	
 	);
+    
+    assign id_reg1_data_i = regfile_rdata1;
+    assign id_reg2_data_i = regfile_rdata2;
 
 	// id
 	id id0(
@@ -671,15 +674,21 @@ module mycpu_top(
 		.wb_wd(wb_wd_i),
 		.wb_wreg(wb_wreg_i),
 		.wb_wdata(wb_wdata_i),
-		.wb_pc(wd_pc_i),
+		.wb_pc(wb_pc_i),
 		.wb_aluop_stall(wb_aluop_stall_i)
 									       	
 	);
 
 	// wb
-	assign regfile_we = wb_wreg_i;
-	assign regfile_waddr = wb_wd_i;
-	assign regfile_wdata = wb_wdata_i;
+	assign regfile_we 		= wb_wreg_i;
+	assign regfile_waddr 	= wb_wd_i;
+	assign regfile_wdata 	= wb_wdata_i;
+
+	// debug
+	assign debug_wb_pc 		= wb_pc_i;
+	assign debug_wb_rf_wen 	= wb_wreg_i;
+	assign debug_wb_rf_wnum = wb_wd_i;
+	assign debug_wb_rf_wdata= wb_wdata_i;
 
 
 endmodule

@@ -24,7 +24,7 @@ module regfile(
 	output reg[`RegBus]           rdata2
 	
 );
-    reg [`RegBus] regs[`RegNum:0];
+    reg [`RegBus] regs[`RegNum - 1:0];
     
     integer i;
     always @(posedge clk) begin
