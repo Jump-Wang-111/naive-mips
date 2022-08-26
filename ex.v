@@ -201,7 +201,8 @@ module ex(
 				end
 				default : begin
 
-			end
-		endcase
+				end
+			endcase
+		end
 	end
 endmodule

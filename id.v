@@ -74,7 +74,7 @@ module id(
 			wreg_o <= `WriteDisable;
 			return_addr_o <= `ZeroRegAddr;
 			branch_flag_o <= `NotBranch;
-			branch_target_address_o <= `ZeroWord;
+			branch_target_address_o <= `InitialPc;
 			inst_o <= `ZeroWord;
 			pc_o <= `InitialPc;
 			stallreq <= `NoStop;
@@ -91,16 +91,16 @@ module id(
 			wreg_o <= `WriteDisable;
 			/* */return_addr_o <= `ZeroRegAddr;
 			/* */branch_flag_o <= `NotBranch;
-			/* */branch_target_address_o <= `ZeroWord;
+			/* */branch_target_address_o <= `InitialPc;
 			inst_o <= inst_i;
 			pc_o <= pc_i;
 			stallreq <= `NoStop;
 			case(opcode)
 				`INST_ORI :	begin
 					reg1_read_o <= `ReadEnable;
-					//reg2_read_o <= `ReadDisable;
+					// reg2_read_o <= `ReadDisable;
 					reg1_addr_o <= rs;
-					//reg2_addr_o <= rt;
+					// reg2_addr_o <= rt;
 					aluop_o <= `ALU_OP_ORI;
 					alusel_o <= `ALU_RES_LOGIC;
 					reg1_o <= reg1_data_i;
