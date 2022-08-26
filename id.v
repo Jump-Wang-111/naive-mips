@@ -42,7 +42,7 @@ module id(
 	output reg[`InstAddrBus]	  branch_target_address_o,  // Ìø×ªµÄpcÖµ
 
 	output reg[`RegBus]		  	  inst_o,
-	output reg[`InstAddrBus]	  pc_o,
+	output wire[`InstAddrBus]	  pc_o,
 	output reg 			      	  stallreq
 			
 );
@@ -59,6 +59,7 @@ module id(
 	wire [31:0] imm26_signe = {{6{imm16[25]}}, imm26};
 	wire [31:0] imm26_unsigne = {6'b0, imm26};
 	
+	assign pc_o = pc_i;
 
 	always @(*) begin
 		if(rst == `RstDisable) begin
@@ -76,7 +77,6 @@ module id(
 			branch_flag_o <= `NotBranch;
 			branch_target_address_o <= `InitialPc;
 			inst_o <= `ZeroWord;
-			pc_o <= `InitialPc;
 			stallreq <= `NoStop;
 		end else begin
 			reg1_read_o <= `ReadDisable;
@@ -93,7 +93,6 @@ module id(
 			/* */branch_flag_o <= `NotBranch;
 			/* */branch_target_address_o <= `InitialPc;
 			inst_o <= inst_i;
-			pc_o <= pc_i;
 			stallreq <= `NoStop;
 			case(opcode)
 				`INST_ORI :	begin
