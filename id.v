@@ -122,9 +122,8 @@ module id(
 					reg1_addr_o <= rs;
 					// reg2_addr_o <= rt;
 					aluop_o <= `ALU_OP_ORI;
-					alusel_o <= `ALU_RES_LOGIC;
 					reg1_o <= reg1_data_i;
-					reg2_o <= imm16_signe;
+					reg2_o <= imm16_unsigne;
 					wd_o <= rt;
 					wreg_o <= `WriteEnable;
 				end
@@ -134,9 +133,8 @@ module id(
 					reg1_addr_o <= rs;
 					//reg2_addr_o <= rt;
 					aluop_o <= `ALU_OP_ANDI;
-					alusel_o <= `ALU_RES_LOGIC;
 					reg1_o <= reg1_data_i;
-					reg2_o <= imm16_signe;
+					reg2_o <= imm16_unsigne;
 					wd_o <= rt;
 					wreg_o <= `WriteEnable;
 				end
@@ -146,81 +144,264 @@ module id(
 					reg1_addr_o <= rs;
 					//reg2_addr_o <= rt;
 					aluop_o <= `ALU_OP_XORI;
-					alusel_o <= `ALU_RES_LOGIC;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_unsigne;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
+				end
+				`INST_LUI :	begin
+					//reg1_read_o <= `ReadDisable;
+					//reg2_read_o <= `ReadDisable;
+					//reg1_addr_o <= `ZeroRegAddr;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_LUI;
+					reg1_o <= `ZeroWord;
+					reg2_o <= imm16_unsigne;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
+				end
+				`INST_ADDI :	begin
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_ADDI;
 					reg1_o <= reg1_data_i;
 					reg2_o <= imm16_signe;
 					wd_o <= rt;
 					wreg_o <= `WriteEnable;
 				end
-				`INST_LUI :	begin
-					
-				end
-				`INST_ADDI :	begin
-
-				end
 				`INST_ADDIU :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_ADDIU;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_SLTI :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_ADDI;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_SLTIU :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_ADDI;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_J :	begin
-
+					//reg1_read_o <= `ReadDisable;
+					//reg2_read_o <= `ReadDisable;
+					//reg1_addr_o <= `ZeroRegAddr;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_J;
+					//reg1_o <= `ZeroWord;
+					//reg2_o <= `ZeroWord;
+					//wd_o <= ZeroRegAddr;
+					//wreg_o <= `WriteDisable;
 				end
 				`INST_JAL :	begin
-
+					//reg1_read_o <= `ReadDisable;
+					//reg2_read_o <= `ReadDisable;
+					//reg1_addr_o <= `ZeroRegAddr;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_JAL;
+					//reg1_o <= `ZeroWord;
+					//reg2_o <= `ZeroWord;
+					wd_o <= 31;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_BEQ_B :	begin
 					if(rs == `RS_B && rt == `RT_B) begin
-
+						//reg1_read_o <= `ReadDisable;
+						//reg2_read_o <= `ReadDisable;
+						//reg1_addr_o <= `ZeroRegAddr;
+						//reg2_addr_o <= `ZeroRegAddr;
+						aluop_o <= `ALU_OP_B;
+						//reg1_o <= `ZeroWord;
+						//reg2_o <= `ZeroWord;
+						//wd_o <= ZeroRegAddr;
+						//wreg_o <= `WriteDisable;
 					end else begin // BEQ
-
+						reg1_read_o <= `ReadEnable;
+						reg2_read_o <= `ReadEnable;
+						reg1_addr_o <= rs;
+						reg2_addr_o <= rt;
+						aluop_o <= `ALU_OP_BEQ;
+						//reg1_o <= `ZeroWord;
+						//reg2_o <= `ZeroWord;
+						//wd_o <= ZeroRegAddr;
+						//wreg_o <= `WriteDisable;
 					end
 				end
 				`INST_BGTZ :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_BGTZ;
+					//reg1_o <= `ZeroWord;
+					//reg2_o <= `ZeroWord;
+					//wd_o <= ZeroRegAddr;
+					//wreg_o <= `WriteDisable;
 				end
 				`INST_BLEZ :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_BLEZ;
+					//reg1_o <= `ZeroWord;
+					//reg2_o <= `ZeroWord;
+					//wd_o <= ZeroRegAddr;
+					//wreg_o <= `WriteDisable;
 				end
 				`INST_BNE :	begin
-
+					reg1_read_o <= `ReadEnable;
+					reg2_read_o <= `ReadEnable;
+					reg1_addr_o <= rs;
+					reg2_addr_o <= rt;
+					aluop_o <= `ALU_OP_BNE;
+					//reg1_o <= `ZeroWord;
+					//reg2_o <= `ZeroWord;
+					//wd_o <= `ZeroRegAddr;
+					//wreg_o <= `WriteDisable;
 				end
 				`INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL :	begin
 					if(rt == `RT_BLTZ) begin
-
+						reg1_read_o <= `ReadEnable;
+						//reg2_read_o <= `ReadDisable;
+						reg1_addr_o <= rs;
+						//reg2_addr_o <= `ZeroRegAddr;
+						aluop_o <= `ALU_OP_BLTZ;
+						//reg1_o <= `ZeroWord;
+						//reg2_o <= `ZeroWord;
+						//wd_o <= ZeroRegAddr;
+						//wreg_o <= `WriteDisable;
 					end else if(rt == `RT_BLTZAL) begin
-
+						reg1_read_o <= `ReadEnable;
+						//reg2_read_o <= `ReadDisable;
+						reg1_addr_o <= rs;
+						//reg2_addr_o <= `ZeroRegAddr;
+						aluop_o <= `ALU_OP_BLTZAL;
+						//reg1_o <= `ZeroWord;
+						//reg2_o <= `ZeroWord;
+						wd_o <= 31;
+						wreg_o <= `WriteEnable;
 					end else if (rt == `RT_BGEZ) begin
-					
+						reg1_read_o <= `ReadEnable;
+						//reg2_read_o <= `ReadDisable;
+						reg1_addr_o <= rs;
+						//reg2_addr_o <= `ZeroRegAddr;
+						aluop_o <= `ALU_OP_BGEZ;
+						//reg1_o <= `ZeroWord;
+						//reg2_o <= `ZeroWord;
+						//wd_o <= ZeroRegAddr;
+						//wreg_o <= `WriteDisable;
 					end else begin // if (rt == `RT_BGEZAL_BAL) 
 						if(rs == `RS_BAL) begin // BAL
-
+							//reg1_read_o <= `ReadDisable;
+							//reg2_read_o <= `ReadDisable;
+							//reg1_addr_o <= `ZeroRegAddr;
+							//reg2_addr_o <= `ZeroRegAddr;
+							aluop_o <= `ALU_OP_BAL;
+							//reg1_o <= `ZeroWord;
+							//reg2_o <= `ZeroWord;
+							wd_o <= 31;
+							wreg_o <= `WriteEnable;
 						end else begin // BGEZAL
-
+							reg1_read_o <= `ReadEnable;
+							//reg2_read_o <= `ReadDisable;
+							reg1_addr_o <= rs;
+							//reg2_addr_o <= `ZeroRegAddr;
+							aluop_o <= `ALU_OP_BGEZAL;
+							//reg1_o <= `ZeroWord;
+							//reg2_o <= `ZeroWord;
+							wd_o <= 31;
+							wreg_o <= `WriteEnable;
 						end
 					end
 				end
 				`INST_LW :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_LW;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_SW :	begin
-
+					reg1_read_o <= `ReadEnable;
+					reg2_read_o <= `ReadEnable;
+					reg1_addr_o <= rs;
+					reg2_addr_o <= rt;
+					aluop_o <= `ALU_OP_SW;
+					reg1_o <= reg1_data_i + imm16_signe;
+					reg2_o <= reg2_data_i;
+					//wd_o <= `ZeroRegAddr;
+					//wreg_o <= `WriteDisable;
 				end
 				`INST_LB :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_LB;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_SB :	begin
-
+					reg1_read_o <= `ReadEnable;
+					reg2_read_o <= `ReadEnable;
+					reg1_addr_o <= rs;
+					reg2_addr_o <= rt;
+					aluop_o <= `ALU_OP_SB;
+					reg1_o <= reg1_data_i + imm16_signe;
+					reg2_o <= reg2_data_i;
+					//wd_o <= `ZeroRegAddr;
+					//wreg_o <= `WriteDisable;
 				end
 				`INST_LH :	begin
-
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_LH;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_SH :	begin
-
+					reg1_read_o <= `ReadEnable;
+					reg2_read_o <= `ReadEnable;
+					reg1_addr_o <= rs;
+					reg2_addr_o <= rt;
+					aluop_o <= `ALU_OP_SH;
+					reg1_o <= reg1_data_i + imm16_signe;
+					reg2_o <= reg2_data_i;
+					//wd_o <= `ZeroRegAddr;
+					//wreg_o <= `WriteDisable;
 				end
 				`INST_SPECIAL : begin
 					case (func) 
