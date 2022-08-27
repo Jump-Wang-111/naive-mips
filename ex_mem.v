@@ -14,6 +14,7 @@ module ex_mem(
 	input wire[`RegBus]				ex_mem_addr,
 	input wire[`RegBus]				ex_reg2,
 	input wire[`InstAddrBus]		ex_pc,
+	input wire[`StopBus]            stall,
 
 
 	output reg[`RegAddrBus]      	mem_wd,
@@ -23,21 +24,28 @@ module ex_mem(
 	output reg[`AluOpBus]			mem_aluop,
 	output reg[`RegBus]				mem_mem_addr,
 	output reg[`RegBus]				mem_reg2,
-	output wire[`InstAddrBus]		mem_pc
+	output reg[`InstAddrBus]		mem_pc
 	
 );
 
-	assign mem_pc = ex_pc;
+//	assign mem_pc = ex_pc;
 
     always @(posedge clk) begin
         if(rst == `RstDisable) begin
             mem_wd       <= `ZeroRegAddr;
             mem_wreg     <= `WriteDisable;
             mem_wdata    <= `ZeroWord;
-        end else begin
+            mem_pc       <= `InitialPc;
+        end else if(stall[3] == `Stop && stall[4] == `NoStop) begin
+            mem_wd       <= `ZeroRegAddr;
+            mem_wreg     <= `WriteDisable;
+            mem_wdata    <= `ZeroWord;
+            mem_pc       <= `InitialPc;
+        end else if(stall[3] == `NoStop) begin
             mem_wd       <= ex_wd;
             mem_wreg     <= ex_wreg;
             mem_wdata    <= ex_wdata;
+            mem_pc       <= ex_pc;
         end
     end
 

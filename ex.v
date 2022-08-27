@@ -25,7 +25,7 @@ module ex(
 	output reg[`RegBus]			    reg2_o,        // ex??¦Å?2????????
 
 	output wire[`InstAddrBus]		pc_o,          // ex??????pc
-	output reg 						stallreq       // ex??????????????????
+	output wire 				    stallreq       // ex??????????????????
 	
 );
 	
@@ -41,7 +41,6 @@ module ex(
 			aluop_o 	<= `ALU_OP_NOP;
 			mem_addr_o 	<= `ZeroWord;
 			reg2_o 		<= `ZeroWord;
-			stallreq 	<= `NoStop;
 		end
 		else begin
 			wd_o 		<= wd_i;
@@ -50,7 +49,6 @@ module ex(
 			aluop_o 	<= aluop_i;
 			mem_addr_o 	<= `ZeroWord;
 			reg2_o 		<= reg2_i;
-			stallreq 	<= `NoStop;
 
 			case(aluop_i)
 				`ALU_OP_ORI :	begin
@@ -141,13 +139,13 @@ module ex(
 				// leave for little cute
 				end
 				`ALU_OP_NOR : begin
-					rd <= ~(reg1_o | reg2_o);
+					wdata_o <= ~(reg1_i | reg2_i);
 				end
 				`ALU_OP_OR : begin
-					rd <= reg1_o | reg2_o;
+					wdata_o <= reg1_i | reg2_i;
 				end
 				`ALU_OP_XOR : begin
-					rd <= reg1_o ^ reg2_o;
+					wdata_o <= reg1_i ^ reg2_i;
 				end
 				`ALU_OP_SLL : begin
 					wdata_o <= reg2_i << reg1_i[15:11];

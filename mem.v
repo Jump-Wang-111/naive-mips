@@ -28,7 +28,7 @@ module mem(
 	
 	output wire[`InstAddrBus]		pc_o,       // mem阶段指令pc
 	output reg[`AluOpBus]			aluop_o,    // mem阶段指令运算子类型
-	output reg 						stallreq    // mem阶段暂停流水线控制信号
+	output wire 					stallreq    // mem阶段暂停流水线控制信号
 
 );
     
