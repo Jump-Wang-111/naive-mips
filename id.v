@@ -382,7 +382,15 @@ module id(
 				`INST_SPECIAL : begin
 					case (func) 
 						`FUNC_AND : begin
-
+						    reg1_read_o <= `ReadEnable;
+						    reg2_read_o <= `ReadEnable;
+						    reg1_addr_o <= rs;
+						    reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_AND;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_NOR : begin
 							reg1_read_o <= `ReadEnable;
@@ -451,7 +459,7 @@ module id(
 							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SRLV : begin
-
+						    
 						end
 						`FUNC_SRA : begin
 							// reg1_read_o <= `ReadEnable;

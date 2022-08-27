@@ -22,7 +22,7 @@ module mem(
     // 送到ram
 	output reg[`RegBus]				mem_addr_o,	// 访存address
 	output reg[3:0]					mem_we_o,	// 访存写使能
-`2	q3	output reg[`RegBus]				mem_data_o, // 访存写数据
+	output reg[`RegBus]				mem_data_o, // 访存写数据
 	output reg						mem_ce_o,	// ram使能信号
 	
 	
