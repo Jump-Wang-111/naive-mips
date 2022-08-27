@@ -648,6 +648,8 @@ module mycpu_top(
 		.reg2_i(mem_reg2_i),
 		.pc_i(mem_pc_i),
 
+		.mem_data_i(data_sram_rdata),
+
 		.wd_o(mem_wd_o),
 		.wreg_o(mem_wreg_o),
 		.wdata_o(mem_wdata_o),

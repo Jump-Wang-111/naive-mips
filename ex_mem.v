@@ -45,8 +45,13 @@ module ex_mem(
             mem_wd       <= ex_wd;
             mem_wreg     <= ex_wreg;
             mem_wdata    <= ex_wdata;
+			mem_aluop	 <= ex_aluop;
+			mem_mem_addr <= ex_mem_addr;
+			mem_reg2	 <= ex_reg2;
             mem_pc       <= ex_pc;
         end
     end
+
+	
 
 endmodule
