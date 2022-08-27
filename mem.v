@@ -14,6 +14,9 @@ module mem(
 	input wire[`RegBus]				reg2_i,		// mem阶段访存数据
 	input wire[`InstAddrBus]		pc_i,
 	
+	// data from ram
+	input wire[`RegBus]          	mem_data_i,
+	
 	// 送到wb阶段的信号
 	output reg[`RegAddrBus]     	wd_o,          // mem阶段指令写目的寄存器号
 	output reg[`WriteBus]           wreg_o,       // mem阶段指令写寄存器使能
@@ -40,11 +43,110 @@ module mem(
             wreg_o <= `WriteDisable;
             wdata_o <= `ZeroWord;
             aluop_o <= `ALU_OP_NOP;
+			mem_addr_o <= `ZeroWord;
+			mem_we_o <= `WriteDisable;
+			mem_data_o <= `ZeroWord;
+			mem_ce_o <= `WriteDisable;
         end else begin
             wd_o <= wd_i;
             wreg_o <= wreg_i;
             wdata_o <= wdata_i;
             aluop_o <= aluop_i;
+			mem_addr_o <= `ZeroWord;
+			mem_we_o <= 4'b1111;
+			mem_data_o <= `ZeroWord;
+			mem_ce_o <= `ReadDisable;
+			case(aluop_i)
+				`ALU_OP_LW : begin
+					mem_addr_o <= mem_addr_i;
+					// mem_we_o <= 4'b1111;
+					wdata_o <= mem_data_i;
+					mem_ce_o <= `ReadEnable;
+				end
+				`ALU_OP_LB : begin
+					mem_addr_o <= mem_addr_i;
+					mem_ce_o <= `ReadEnable;
+					case(mem_addr_i[1:0]) 
+						2'b00 : begin
+							wdata_o <= {{24{mem_data_i[31]}}, mem_data_i[31:24]};
+							mem_we_o <= 4'b1000;
+						end
+						2'b01 : begin
+							wdata_o <= {{24{mem_data_i[23]}}, mem_data_i[23:16]};
+							mem_we_o <= 4'b0100;
+						end
+						2'b10 : begin
+							wdata_o <= {{24{mem_data_i[15]}}, mem_data_i[15:8]};
+							mem_we_o <= 4'b0010;
+						end
+						2'b11 : begin
+							wdata_o <= {{24{mem_data_i[7]}}, mem_data_i[7:0]};
+							mem_we_o <= 4'b0001;
+						end
+						default : begin
+							wdata <= `ZeroWord;
+						end
+					endcase
+				end
+				`ALU_OP_LH : begin
+					mem_addr_o <= mem_addr_i;
+					mem_ce_o <= `ReadEnable;
+					case(mem_addr_i[1:0]) 
+						2'b00 : begin
+							wdata_o <= {{24{mem_data_i[31]}}, mem_data_i[31:16]};
+							mem_we_o <= 4'b1100;
+						end
+						2'b10 : begin
+							wdata_o <= {{24{mem_data_i[15]}}, mem_data_i[15:0]};
+							mem_we_o <= 4'b0011;
+						end
+						default : begin
+							wdata <= `ZeroWord;
+						end
+					endcase
+				end
+				`ALU_OP_SW : begin
+					mem_addr_o <= mem_addr_i;
+					// mem_we_o <= 4'b1111;
+					mem_data_o <= reg2_i;
+					mem_ce_o <= `ReadEnable;
+				end
+				`ALU_OP_SB : begin
+					mem_addr_o <= mem_addr_i;
+					mem_ce_o <= `ReadEnable;
+					mem_data_o <= {reg2_i[7:0], reg2_i[7:0], reg2_i[7:0], reg2_i[7:0]};
+					case(mem_addr_i[1:0])
+						2'b00 : begin
+							mem_we_o <= 4'b1000;
+						end
+						2'b01 : begin
+							mem_we_o <= 4'b0100;
+						end
+						2'b10 : begin
+							mem_we_o <= 4'b0010;
+						end
+						2'b11 : begin
+							mem_we_o <= 4'b0001;
+						end
+					endcase
+				end
+				`ALU_OP_SH : begin
+					mem_addr_o <= mem_addr_i;
+					mem_ce_o <= `ReadEnable;
+					mem_data_o <= {reg2_i[15:0], reg2_i[15:0]};
+					case(mem_addr_i[1:0])
+						2'b00 : begin
+							mem_we_o <= 4'b1100;
+						end
+						2'b10 : begin
+							mem_we_o <= 4'b0011;
+						end
+					endcase
+				end
+				default : begin
+					mem_we_o <= 4b'1111;
+				end
+			endcase
         end
        
     end

@@ -30,7 +30,6 @@ module ex(
 );
 	
 	assign pc_o = pc_i;
-	integer i;
 
 	always @(*) begin
 

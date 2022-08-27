@@ -34,11 +34,19 @@ module ex_mem(
             mem_wd       <= `ZeroRegAddr;
             mem_wreg     <= `WriteDisable;
             mem_wdata    <= `ZeroWord;
+			mem_aluop	 <= `ALU_OP_NOP;
+			mem_mem_addr <= `ZeroWord;
+			mem_reg2	 <= `ZeroWord;
         end else begin
             mem_wd       <= ex_wd;
             mem_wreg     <= ex_wreg;
             mem_wdata    <= ex_wdata;
+			mem_aluop	 <= ex_aluop;
+			mem_mem_addr <= ex_mem_addr;
+			mem_reg2	 <= ex_reg2;
         end
     end
+
+	
 
 endmodule
