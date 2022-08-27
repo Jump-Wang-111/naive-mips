@@ -715,12 +715,12 @@ module id(
 					if(rs == `RS_B && rt == `RT_B) begin
 						// return_addr_o <= `ZeroWord;
 						branch_flag_o <= `Branch;
-						branch_target_address_o <= pc + imm_sll2_sign;
+						branch_target_address_o <= pc_i + imm_sll2_sign;
 					end else begin // BEQ
 						if(reg1_o == reg2_o) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end
 				end
@@ -730,44 +730,44 @@ module id(
 				`INST_BLEZ :	begin
 					// return_addr_o <= `ZeroWord;
 					branch_flag_o <= `Branch;
-					branch_target_address_o <= pc + imm_sll2_sign;
+					branch_target_address_o <= pc_i + imm_sll2_sign;
 				end
 				`INST_BNE :	begin
 					if(reg1_o != reg2_o) begin
 						// return_addr_o <= `ZeroWord;
 						branch_flag_o <= `Branch;
-						branch_target_address_o <= pc + imm_sll2_sign;
+						branch_target_address_o <= pc_i + imm_sll2_sign;
 					end
 				end
 				`INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL :	begin
 					if(rt == `RT_BLTZ) begin
-						if(reg1_o[31] == 1b'1) begin
+						if(reg1_o[31] == 1'b1) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end else if(rt == `RT_BLTZAL) begin
-						if(reg1_o[31] == 1b'1) begin
+						if(reg1_o[31] == 1'b1) begin
 							return_addr_o <= pc_plus_4;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end else if (rt == `RT_BGEZ) begin
-						if(reg1_o[31] == 1b'0) begin
+						if(reg1_o[31] == 1'b0) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end else begin // if (rt == `RT_BGEZAL_BAL) 
 						if(rs == `RS_BAL) begin // BAL
 							return_addr_o <= pc_plus_4;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end else begin // BGEZAL
-							if(reg1_o[31] == 1b'0) begin
+							if(reg1_o[31] == 1'b0) begin
 								return_addr_o <= pc_plus_4;
 								branch_flag_o <= `Branch;
-								branch_target_address_o <= pc + imm_sll2_sign;
+								branch_target_address_o <= pc_i + imm_sll2_sign;
 							end
 						end
 					end
