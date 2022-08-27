@@ -725,12 +725,17 @@ module id(
 					end
 				end
 				`INST_BGTZ :	begin
-					// leave for little cute
+					if(reg1_o > 0) begin
+						branch_flag_o <= `Branch;
+						branch_target_address_o <= pc + imm_sll2_sign;
+					end
 				end
 				`INST_BLEZ :	begin
 					// return_addr_o <= `ZeroWord;
-					branch_flag_o <= `Branch;
-					branch_target_address_o <= pc + imm_sll2_sign;
+					if(reg1_o <= 0) begin
+						branch_flag_o <= `Branch;
+						branch_target_address_o <= pc + imm_sll2_sign;
+					end
 				end
 				`INST_BNE :	begin
 					if(reg1_o != reg2_o) begin
