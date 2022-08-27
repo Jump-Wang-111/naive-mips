@@ -183,15 +183,7 @@ module id(
 					wreg_o <= `WriteEnable;
 				end
 				`INST_SLTI :	begin
-					reg1_read_o <= `ReadEnable;
-					//reg2_read_o <= `ReadDisable;
-					reg1_addr_o <= rs;
-					//reg2_addr_o <= `ZeroRegAddr;
-					aluop_o <= `ALU_OP_ADDI;
-					reg1_o <= reg1_data_i;
-					reg2_o <= imm16_signe;
-					wd_o <= rt;
-					wreg_o <= `WriteEnable;
+
 				end
 				`INST_SLTIU :	begin
 					reg1_read_o <= `ReadEnable;
@@ -250,15 +242,7 @@ module id(
 					end
 				end
 				`INST_BGTZ :	begin
-					reg1_read_o <= `ReadEnable;
-					//reg2_read_o <= `ReadDisable;
-					reg1_addr_o <= rs;
-					//reg2_addr_o <= `ZeroRegAddr;
-					aluop_o <= `ALU_OP_BGTZ;
-					//reg1_o <= `ZeroWord;
-					//reg2_o <= `ZeroWord;
-					//wd_o <= ZeroRegAddr;
-					//wreg_o <= `WriteDisable;
+
 				end
 				`INST_BLEZ :	begin
 					reg1_read_o <= `ReadEnable;
@@ -382,15 +366,7 @@ module id(
 					//wreg_o <= `WriteDisable;
 				end
 				`INST_LH :	begin
-					reg1_read_o <= `ReadEnable;
-					//reg2_read_o <= `ReadDisable;
-					reg1_addr_o <= rs;
-					//reg2_addr_o <= `ZeroRegAddr;
-					aluop_o <= `ALU_OP_LH;
-					reg1_o <= reg1_data_i;
-					reg2_o <= imm16_signe;
-					wd_o <= rt;
-					wreg_o <= `WriteEnable;
+
 				end
 				`INST_SH :	begin
 					reg1_read_o <= `ReadEnable;
@@ -442,61 +418,200 @@ module id(
 							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SLL : begin
-
+							//reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							// reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLL;
+							reg1_o <= imm16_unsigne;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SLLV : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLLV;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SRL : begin
-
+							// reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							// reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SRL;
+							reg1_o <= imm16_unsigne;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SRLV : begin
 
 						end
 						`FUNC_SRA : begin
-
+							// reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							// reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SRA;
+							reg1_o <= imm16_unsigne;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SRAV : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLLV;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_NOP : begin
-
+							//reg1_read_o <= `ReadEnable;
+							//reg2_read_o <= `ReadEnable;
+							//reg1_addr_o <= rs;
+							//reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLL;
+							// reg1_o <= reg1_data_i;
+							// reg2_o <= reg2_data_i;
+							// wd_o <= rd;
+							// wreg_o <= `WriteEnable;
 						end
 						`FUNC_SSNOP : begin
-
+							//reg1_read_o <= `ReadEnable;
+							//reg2_read_o <= `ReadEnable;
+							//reg1_addr_o <= rs;
+							//reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLL;
+							// reg1_o <= reg1_data_i;
+							// reg2_o <= reg2_data_i;
+							// wd_o <= rd;
+							// wreg_o <= `WriteEnable;
 						end
 						`FUNC_SYNC : begin
-
+							//reg1_read_o <= `ReadEnable;
+							//reg2_read_o <= `ReadEnable;
+							//reg1_addr_o <= rs;
+							//reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLL;
+							// reg1_o <= reg1_data_i;
+							// reg2_o <= reg2_data_i;
+							// wd_o <= rd;
+							// wreg_o <= `WriteEnable;
 						end
 						`FUNC_MOVN : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_MOVN;
+							if(reg2_data_i != 0) begin
+								reg1_o <= reg1_data_i;
+								// reg2_o <= reg2_data_i;
+								wd_o <= rd;
+								wreg_o <= `WriteEnable;
+							end
+							
 						end
 						`FUNC_MOVZ : begin
 
 						end
 						`FUNC_ADD : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_ADD;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_ADDU : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_ADDU;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SUB : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SUB;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SUBU : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SUBU;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SLT : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLT;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SLTU : begin
-
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SLTU;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_JR : begin
-
+							reg1_read_o <= `ReadEnable;
+							// reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							// reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_JR;
+							// reg1_o <= reg1_data_i;
+							// reg2_o <= reg2_data_i;
+							// wd_o <= rd;
+							// wreg_o <= `WriteEnable;
 						end
 						`FUNC_JALR : begin
-
+							reg1_read_o <= `ReadEnable;
+							// reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							// reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_JALR;
+							// reg1_o <= reg1_data_i;
+							// reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						default : begin
 

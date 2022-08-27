@@ -6,7 +6,7 @@ module mem(
 	
 	// 来自执行阶段的信号
 	input wire[`RegAddrBus]       	wd_i,       // mem阶段指令写目的寄存器号
-	input wire[`WriteBus]             wreg_i,    // mem阶段指令写寄存器使能
+	input wire[`WriteBus]           wreg_i,    // mem阶段指令写寄存器使能
 	input wire[`RegBus]				wdata_i,    // mem阶段指令写入目的寄存器数据
 	
 	input wire[`AluOpBus]			aluop_i,	// mem阶段指令要进行的运算子类型
@@ -22,7 +22,7 @@ module mem(
     // 送到ram
 	output reg[`RegBus]				mem_addr_o,	// 访存address
 	output reg[3:0]					mem_we_o,	// 访存写使能
-	output reg[`RegBus]				mem_data_o, // 访存写数据
+`2	q3	output reg[`RegBus]				mem_data_o, // 访存写数据
 	output reg						mem_ce_o,	// ram使能信号
 	
 	
