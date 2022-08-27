@@ -180,7 +180,15 @@ module id(
 					wreg_o <= `WriteEnable;
 				end
 				`INST_SLTI :	begin
-					// leave for little cute
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_SLTI;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <=rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_SLTIU :	begin
 					reg1_read_o <= `ReadEnable;
@@ -239,7 +247,15 @@ module id(
 					end
 				end
 				`INST_BGTZ :	begin
-					// leave for little cute
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_BGTZ;
+					//reg1_o <= `ZeroWord;
+					//reg2_o <= `ZeroWord;
+					//wd_o <= ZeroRegAddr;
+					//wreg_o <= `WriteDisable;					
 				end
 				`INST_BLEZ :	begin
 					reg1_read_o <= `ReadEnable;
@@ -363,7 +379,15 @@ module id(
 					//wreg_o <= `WriteDisable;
 				end
 				`INST_LH :	begin
-					// leave for little cute
+					reg1_read_o <= `ReadEnable;
+					//reg2_read_o <= `ReadDisable;
+					reg1_addr_o <= rs;
+					//reg2_addr_o <= `ZeroRegAddr;
+					aluop_o <= `ALU_OP_LH;
+					reg1_o <= reg1_data_i;
+					reg2_o <= imm16_signe;
+					wd_o <= rt;
+					wreg_o <= `WriteEnable;
 				end
 				`INST_SH :	begin
 					reg1_read_o <= `ReadEnable;
@@ -388,7 +412,6 @@ module id(
 							reg2_o <= reg2_data_i;
 							wd_o <= rd;
 							wreg_o <= `WriteEnable;
-							// leave for little cute
 						end
 						`FUNC_NOR : begin
 							reg1_read_o <= `ReadEnable;
@@ -457,7 +480,15 @@ module id(
 							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SRLV : begin
-							// leave for little cute
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_SRLV;
+							reg1_o <= reg1_data_i;
+							reg2_o <= reg2_data_i;
+							wd_o <= rd;
+							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SRA : begin
 							// reg1_read_o <= `ReadEnable;
@@ -529,7 +560,17 @@ module id(
 							
 						end
 						`FUNC_MOVZ : begin
-							// leave for little cute
+							reg1_read_o <= `ReadEnable;
+							reg2_read_o <= `ReadEnable;
+							reg1_addr_o <= rs;
+							reg2_addr_o <= rt;
+							aluop_o <= `ALU_OP_MOVZ;
+							if(reg2_data_i == 0) begin
+								reg1_o <= reg1_data_i;
+								reg2_o <= reg2_data_i;
+								wd_o <= rd;
+								wreg_o <= `WriteEnable;
+							end
 						end
 						`FUNC_ADD : begin
 							reg1_read_o <= `ReadEnable;
@@ -674,12 +715,12 @@ module id(
 					if(rs == `RS_B && rt == `RT_B) begin
 						// return_addr_o <= `ZeroWord;
 						branch_flag_o <= `Branch;
-						branch_target_address_o <= pc + imm_sll2_sign;
+						branch_target_address_o <= pc_i + imm_sll2_sign;
 					end else begin // BEQ
 						if(reg1_o == reg2_o) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end
 				end
@@ -689,44 +730,44 @@ module id(
 				`INST_BLEZ :	begin
 					// return_addr_o <= `ZeroWord;
 					branch_flag_o <= `Branch;
-					branch_target_address_o <= pc + imm_sll2_sign;
+					branch_target_address_o <= pc_i + imm_sll2_sign;
 				end
 				`INST_BNE :	begin
 					if(reg1_o != reg2_o) begin
 						// return_addr_o <= `ZeroWord;
 						branch_flag_o <= `Branch;
-						branch_target_address_o <= pc + imm_sll2_sign;
+						branch_target_address_o <= pc_i + imm_sll2_sign;
 					end
 				end
 				`INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL :	begin
 					if(rt == `RT_BLTZ) begin
-						if(reg1_o[31] == 1b'1) begin
+						if(reg1_o[31] == 1'b1) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end else if(rt == `RT_BLTZAL) begin
-						if(reg1_o[31] == 1b'1) begin
+						if(reg1_o[31] == 1'b1) begin
 							return_addr_o <= pc_plus_4;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end else if (rt == `RT_BGEZ) begin
-						if(reg1_o[31] == 1b'0) begin
+						if(reg1_o[31] == 1'b0) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end
 					end else begin // if (rt == `RT_BGEZAL_BAL) 
 						if(rs == `RS_BAL) begin // BAL
 							return_addr_o <= pc_plus_4;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc + imm_sll2_sign;
+							branch_target_address_o <= pc_i + imm_sll2_sign;
 						end else begin // BGEZAL
-							if(reg1_o[31] == 1b'0) begin
+							if(reg1_o[31] == 1'b0) begin
 								return_addr_o <= pc_plus_4;
 								branch_flag_o <= `Branch;
-								branch_target_address_o <= pc + imm_sll2_sign;
+								branch_target_address_o <= pc_i + imm_sll2_sign;
 							end
 						end
 					end

@@ -24,7 +24,7 @@ module if_id(
         end
         else begin
             // id_pc   <= if_pc;
-            id_inst <= if_inst
+            id_inst <= if_inst;
         end
     end
 
