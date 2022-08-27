@@ -87,7 +87,7 @@ module ex(
 
 				end
 				`ALU_OP_JAL :	begin
-					wdata_o <= pc_i + 4;
+					wdata_o <= return_addr_i;
 				end
 				`ALU_OP_BEQ :	begin
 					
@@ -108,16 +108,16 @@ module ex(
 					// leave for little cute
 				end
 				`ALU_OP_BLTZAL :	begin
-					wdata_o <= pc_i + 4;
+					wdata_o <= return_addr_i;
 				end
 				`ALU_OP_BGEZ :	begin
 
 				end
 				`ALU_OP_BGEZAL :	begin
-					wdata_o <= pc_i + 4;
+					wdata_o <= return_addr_i;
 				end
 				`ALU_OP_BAL :	begin
-					wdata_o <= pc_i + 4;
+					wdata_o <= return_addr_i;
 				end
 				`ALU_OP_LW :	begin
 					mem_addr_o <= reg1_i + reg2_i;
@@ -141,7 +141,7 @@ module ex(
 				// leave for little cute
 				end
 				`ALU_OP_NOR : begin
-					rd <= !(reg1_o | reg2_o);
+					rd <= ~(reg1_o | reg2_o);
 				end
 				`ALU_OP_OR : begin
 					rd <= reg1_o | reg2_o;
@@ -162,12 +162,10 @@ module ex(
 					// leave for little cute
 				end
 				`ALU_OP_SRA : begin
-					wdata_o <= reg2_i >> reg1_i[15:11];
-					for(i = 31 - reg1_i[15:11]; i < 31; i = i + 1) reg2_i[i] <= reg2_i[31];
+					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[15:11]})) | reg2_i >> reg1_i[15:11];
 				end
 				`ALU_OP_SRAV : begin
-					wdata_o <= reg2_i >> reg1_i[4:0];
-					for(i = 31 - reg1_i[4:0]; i < 31; i = i + 1) reg2_i[i] <= reg2_i[31];
+					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[4:0]})) | reg2_i >> reg1_i[4:0];
 				end
 				`ALU_OP_NOP : begin
 
@@ -235,7 +233,7 @@ module ex(
 				
 				end
 				`ALU_OP_JALR : begin
-					wdata_o <= pc_i + 4;
+					wdata_o <= return_addr_i;
 				end
 				default : begin
 

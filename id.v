@@ -64,6 +64,9 @@ module id(
 	reg [1:0]		reg2_conflict_flag;
 	
 	assign pc_o = pc_i;
+	wire [`InstAddrBus] pc_plus_4 = pc_i + 4;
+	wire [`InstAddrBus] pc_plus_8 = pc_i + 8;
+	wire [`RegBus]		imm_sll2_sign = {imm16_signe[29:0], 2'b00};
 
 	always @(*) begin
 		if(rst == `RstDisable) begin
@@ -77,9 +80,6 @@ module id(
 			reg2_o <= `ZeroWord;
 			wd_o <= `ZeroRegAddr;
 			wreg_o <= `WriteDisable;
-			return_addr_o <= `ZeroRegAddr;
-			branch_flag_o <= `NotBranch;
-			branch_target_address_o <= `InitialPc;
 			inst_o <= `ZeroWord;
 			stallreq <= `NoStop;
 			reg1_conflict_flag <= `NoConflict;
@@ -110,9 +110,6 @@ module id(
 			reg2_o <= `ZeroWord;
 			wd_o <= `ZeroRegAddr;
 			wreg_o <= `WriteDisable;
-			/* */return_addr_o <= `ZeroRegAddr;
-			/* */branch_flag_o <= `NotBranch;
-			/* */branch_target_address_o <= `InitialPc;
 			inst_o <= inst_i;
 			stallreq <= `NoStop;
 			case(opcode)
@@ -692,5 +689,91 @@ module id(
 			end
 		end
 	end
+
+	always @(*) begin
+		if(rst == `RstDisable) begin
+			return_addr_o <= `ZeroWord;
+			branch_flag_o <= `NotBranch;
+			branch_target_address_o <= `InitialPc;
+		end
+		else begin
+			return_addr_o <= `ZeroWord;
+			branch_flag_o <= `NotBranch;
+			branch_target_address_o <= `InitialPc;
+			case(opcode) 
+				`INST_J :	begin
+					// return_addr_o <= `ZeroWord;
+					branch_flag_o <= `Branch;
+					branch_target_address_o <= {pc_i[31:28], inst_i[25:0], 2'b00};
+				end
+				`INST_JAL :	begin
+					// return_addr_o <= `ZeroWord;
+					branch_flag_o <= `Branch;
+					branch_target_address_o <= {pc_i[31:28], inst_i[25:0], 2'b00};
+				end
+				`INST_BEQ_B :	begin
+					if(rs == `RS_B && rt == `RT_B) begin
+						// return_addr_o <= `ZeroWord;
+						branch_flag_o <= `Branch;
+						branch_target_address_o <= pc + imm_sll2_sign;
+					end else begin // BEQ
+						if(reg1_o == reg2_o) begin
+							// return_addr_o <= `ZeroWord;
+							branch_flag_o <= `Branch;
+							branch_target_address_o <= pc + imm_sll2_sign;
+						end
+					end
+				end
+				`INST_BGTZ :	begin
+					// leave for little cute
+				end
+				`INST_BLEZ :	begin
+					// return_addr_o <= `ZeroWord;
+					branch_flag_o <= `Branch;
+					branch_target_address_o <= pc + imm_sll2_sign;
+				end
+				`INST_BNE :	begin
+					if(reg1_o != reg2_o) begin
+						// return_addr_o <= `ZeroWord;
+						branch_flag_o <= `Branch;
+						branch_target_address_o <= pc + imm_sll2_sign;
+					end
+				end
+				`INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL :	begin
+					if(rt == `RT_BLTZ) begin
+						if(reg1_o[31] == 1b'1) begin
+							// return_addr_o <= `ZeroWord;
+							branch_flag_o <= `Branch;
+							branch_target_address_o <= pc + imm_sll2_sign;
+						end
+					end else if(rt == `RT_BLTZAL) begin
+						if(reg1_o[31] == 1b'1) begin
+							return_addr_o <= pc_plus_4;
+							branch_flag_o <= `Branch;
+							branch_target_address_o <= pc + imm_sll2_sign;
+						end
+					end else if (rt == `RT_BGEZ) begin
+						if(reg1_o[31] == 1b'0) begin
+							// return_addr_o <= `ZeroWord;
+							branch_flag_o <= `Branch;
+							branch_target_address_o <= pc + imm_sll2_sign;
+						end
+					end else begin // if (rt == `RT_BGEZAL_BAL) 
+						if(rs == `RS_BAL) begin // BAL
+							return_addr_o <= pc_plus_4;
+							branch_flag_o <= `Branch;
+							branch_target_address_o <= pc + imm_sll2_sign;
+						end else begin // BGEZAL
+							if(reg1_o[31] == 1b'0) begin
+								return_addr_o <= pc_plus_4;
+								branch_flag_o <= `Branch;
+								branch_target_address_o <= pc + imm_sll2_sign;
+							end
+						end
+					end
+				end
+			endcase
+		end // else
+	end // always
 
 endmodule

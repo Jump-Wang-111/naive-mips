@@ -24,8 +24,13 @@ module pc_reg(
             ce <= `ReadEnable;
         end
         else begin
-            pc <= pc_ds;
             ce <= `ReadEnable;
+            if(branch_flag_i == `Branch) begin
+                pc <= branch_target_address_i;
+            end
+            else begin
+                pc <= pc_ds;
+            end
         end
     end
 	
