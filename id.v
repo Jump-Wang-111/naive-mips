@@ -183,7 +183,7 @@ module id(
 					wreg_o <= `WriteEnable;
 				end
 				`INST_SLTI :	begin
-
+					// leave for little cute
 				end
 				`INST_SLTIU :	begin
 					reg1_read_o <= `ReadEnable;
@@ -242,7 +242,7 @@ module id(
 					end
 				end
 				`INST_BGTZ :	begin
-
+					// leave for little cute
 				end
 				`INST_BLEZ :	begin
 					reg1_read_o <= `ReadEnable;
@@ -366,7 +366,7 @@ module id(
 					//wreg_o <= `WriteDisable;
 				end
 				`INST_LH :	begin
-
+					// leave for little cute
 				end
 				`INST_SH :	begin
 					reg1_read_o <= `ReadEnable;
@@ -391,6 +391,7 @@ module id(
 							reg2_o <= reg2_data_i;
 							wd_o <= rd;
 							wreg_o <= `WriteEnable;
+							// leave for little cute
 						end
 						`FUNC_NOR : begin
 							reg1_read_o <= `ReadEnable;
@@ -459,7 +460,7 @@ module id(
 							wreg_o <= `WriteEnable;
 						end
 						`FUNC_SRLV : begin
-						    
+							// leave for little cute
 						end
 						`FUNC_SRA : begin
 							// reg1_read_o <= `ReadEnable;
@@ -524,14 +525,14 @@ module id(
 							aluop_o <= `ALU_OP_MOVN;
 							if(reg2_data_i != 0) begin
 								reg1_o <= reg1_data_i;
-								// reg2_o <= reg2_data_i;
+								reg2_o <= reg2_data_i;
 								wd_o <= rd;
 								wreg_o <= `WriteEnable;
 							end
 							
 						end
 						`FUNC_MOVZ : begin
-
+							// leave for little cute
 						end
 						`FUNC_ADD : begin
 							reg1_read_o <= `ReadEnable;

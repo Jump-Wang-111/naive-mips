@@ -28,7 +28,10 @@ module ex(
 	output reg 						stallreq       // ex??????????????????
 	
 );
+	
 	assign pc_o = pc_i;
+	integer i;
+
 	always @(*) begin
 
 		if(rst == `RstDisable) begin
@@ -60,25 +63,31 @@ module ex(
 					wdata_o <= reg1_i ^ reg2_i;
 				end
 				`ALU_OP_LUI :	begin
-					
+					wdata_o <= reg2_i << 16;
 				end
 				`ALU_OP_ADDI :	begin
-
+					// overflow detect: ignore
+					wdata_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_ADDIU :	begin
-
+					wdata_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SLTI :	begin
-
+					// leave for little cute
 				end
 				`ALU_OP_SLTIU :	begin
-
+					if(reg1_i < reg2_i) begin
+						wdata_o <= 1;
+					end
+					else begin
+						wdata_o <= 0;
+					end
 				end
 				`ALU_OP_J :	begin
 
 				end
 				`ALU_OP_JAL :	begin
-
+					wdata_o <= pc_i + 4;
 				end
 				`ALU_OP_BEQ :	begin
 					
@@ -96,40 +105,40 @@ module ex(
 
 				end
 				`ALU_OP_BLTZ :	begin
-					
+					// leave for little cute
 				end
 				`ALU_OP_BLTZAL :	begin
-
+					wdata_o <= pc_i + 4;
 				end
 				`ALU_OP_BGEZ :	begin
 
 				end
 				`ALU_OP_BGEZAL :	begin
-
+					wdata_o <= pc_i + 4;
 				end
 				`ALU_OP_BAL :	begin
-
+					wdata_o <= pc_i + 4;
 				end
 				`ALU_OP_LW :	begin
-
+					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SW :	begin
-
+					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_LB :	begin
-
+					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SB :	begin
-
+					mem_addr_o <= reg1_i;
 				end
 				`ALU_OP_LH :	begin
-
+					// leave for little cute
 				end
 				`ALU_OP_SH :	begin
-
+					mem_addr_o <= reg1_i;
 			end
 			`ALU_OP_AND : begin
-
+				// leave for little cute
 				end
 				`ALU_OP_NOR : begin
 					rd <= !(reg1_o | reg2_o);
@@ -141,22 +150,24 @@ module ex(
 					rd <= reg1_o ^ reg2_o;
 				end
 				`ALU_OP_SLL : begin
-
+					wdata_o <= reg2_i << reg1_i[15:11];
 				end
 				`ALU_OP_SLLV : begin
-
+					wdata_o <= reg2_i << reg1_i[4:0];
 				end
 				`ALU_OP_SRL : begin
-
+					wdata_o <= reg2_i >> reg1_i[15:11];
 				end
 				`ALU_OP_SRLV : begin
-
+					// leave for little cute
 				end
 				`ALU_OP_SRA : begin
-
+					wdata_o <= reg2_i >> reg1_i[15:11];
+					for(i = 31 - reg1_i[15:11]; i < 31; i = i + 1) reg2_i[i] <= reg2_i[31];
 				end
 				`ALU_OP_SRAV : begin
-
+					wdata_o <= reg2_i >> reg1_i[4:0];
+					for(i = 31 - reg1_i[4:0]; i < 31; i = i + 1) reg2_i[i] <= reg2_i[31];
 				end
 				`ALU_OP_NOP : begin
 
@@ -168,34 +179,63 @@ module ex(
 
 				end
 				`ALU_OP_MOVN : begin
-
+					if(reg2_i != 0) begin
+						wdata_o <= reg1_i;
+					end
 				end
 				`ALU_OP_MOVZ : begin
-
+					// leave for little cute
 				end
 				`ALU_OP_ADD : begin
-
+					wdata_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_ADDU : begin
-
+					wdata_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SUB : begin
-
+					wdata_o <= reg1_i - reg2_i;
 				end
 				`ALU_OP_SUBU : begin
-
+					wdata_o <= reg1_i - reg2_i;
 				end
 				`ALU_OP_SLT : begin
-
+					if(reg1_i[31] < reg2_i[31]) begin
+						wdata_o <= 0;
+					end
+					else if(reg1_i[31] > reg2_i[31]) begin
+						wdata_o <= 1;
+					end
+					else if(reg1_i[31] == 1'b0) begin
+						if(reg1_i < reg2_i) begin
+							wdata_o <= 1;
+						end
+						else begin
+							wdata_o <= 0;
+						end
+					end
+					else if(reg1_i[31] == 1'b1) begin
+						if(reg1_i < reg2_i) begin
+							wdata_o <= 0;
+						end
+						else begin
+							wdata_o <= 1;
+						end
+					end
+					
 				end
 				`ALU_OP_SLTU : begin
-
+					if(reg1_i < reg2_i) begin
+						wdata_o <= 1;
+					end
+					else begin
+						wdata_o <= 0;
+					end
 				end
 				`ALU_OP_JR : begin
-
+				
 				end
 				`ALU_OP_JALR : begin
-
+					wdata_o <= pc_i + 4;
 				end
 				default : begin
 
