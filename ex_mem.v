@@ -35,11 +35,17 @@ module ex_mem(
             mem_wd       <= `ZeroRegAddr;
             mem_wreg     <= `WriteDisable;
             mem_wdata    <= `ZeroWord;
+			mem_aluop	 <= `ALU_OP_NOP;
+			mem_mem_addr <= `ZeroWord;
+			mem_reg2	 <= `ZeroWord;
             mem_pc       <= `InitialPc;
         end else if(stall[3] == `Stop && stall[4] == `NoStop) begin
             mem_wd       <= `ZeroRegAddr;
             mem_wreg     <= `WriteDisable;
             mem_wdata    <= `ZeroWord;
+			mem_aluop	 <= `ALU_OP_NOP;
+			mem_mem_addr <= `ZeroWord;
+			mem_reg2	 <= `ZeroWord;
             mem_pc       <= `InitialPc;
         end else if(stall[3] == `NoStop) begin
             mem_wd       <= ex_wd;
