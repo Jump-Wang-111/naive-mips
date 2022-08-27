@@ -31,6 +31,7 @@ module ex(
 	
 	assign pc_o = pc_i;
 
+
 	always @(*) begin
 
 		if(rst == `RstDisable) begin
