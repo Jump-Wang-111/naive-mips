@@ -4,42 +4,42 @@
 module id(
 
 	input wire					  rst,
-	input wire[`InstAddrBus]	  pc_i,         // id阶段指令对应的pc
-	input wire[`InstBus]          inst_i,       // id阶段指令
+	input wire[`InstAddrBus]	  pc_i,         // id??????????pc
+	input wire[`InstBus]          inst_i,       // id??????
 
-	// ex阶段运算结果
-	input wire					  ex_wreg_i,    // ex阶段指令是否写寄存器
-	input wire[`RegBus]			  ex_wdata_i,   // ex阶段指令写寄存器数据
-	input wire[`RegAddrBus]       ex_wd_i,      // ex阶段指令写寄存器号
+	// ex?????????
+	input wire					  ex_wreg_i,    // ex?????????д?????
+	input wire[`RegBus]			  ex_wdata_i,   // ex??????д?????????
+	input wire[`RegAddrBus]       ex_wd_i,      // ex??????д???????
 	
-	// mem阶段结果
-	input wire					  mem_wreg_i,   // mem阶段指令是否写寄存器
-	input wire[`RegBus]			  mem_wdata_i,  // mem阶段指令写寄存器数据
-	input wire[`RegAddrBus]       mem_wd_i,     // mem阶段指令写寄存器号
+	// mem??ν??
+	input wire					  mem_wreg_i,   // mem?????????д?????
+	input wire[`RegBus]			  mem_wdata_i,  // mem??????д?????????
+	input wire[`RegAddrBus]       mem_wd_i,     // mem??????д???????
 	
-	// 读到的regfile数据
-	input wire[`RegBus]           reg1_data_i,  // 读regfile得到的第1个数据
-	input wire[`RegBus]           reg2_data_i,  // 读regfile得到的第2个数据
+	// ??????regfile????
+	input wire[`RegBus]           reg1_data_i,  // ??regfile??????1??????
+	input wire[`RegBus]           reg2_data_i,  // ??regfile??????2??????
 
-	// 输出到regfile的读信号
-	output reg                    reg1_read_o,  // regfile第1个读使能
-	output reg                    reg2_read_o,  // regfile第2个读使能
-	output reg[`RegAddrBus]       reg1_addr_o,  // regfile第1个读寄存器号
-	output reg[`RegAddrBus]       reg2_addr_o, 	// regfile第2个读寄存器号
+	// ?????regfile??????
+	output reg                    reg1_read_o,  // regfile??1???????
+	output reg                    reg2_read_o,  // regfile??2???????
+	output reg[`RegAddrBus]       reg1_addr_o,  // regfile??1???????????
+	output reg[`RegAddrBus]       reg2_addr_o, 	// regfile??2???????????
 	
-	// 输出到ex阶段的信号
-	output reg[`AluOpBus]         aluop_o,      // id阶段指令要进行的运算子类
-	output reg[`AluSelBus]        alusel_o,     // id阶段指令要进行的运算类型
-	output reg[`RegBus]           reg1_o,       // id阶段指令要进行运算的操作数1
-	output reg[`RegBus]           reg2_o,       // id阶段指令要进行运算的操作数2
-	output reg[`RegAddrBus]       wd_o,         // id阶段指令要写入的目的寄存器号
-	output reg[`WriteBus]         wreg_o,       // id阶段指令是否写入寄存器
-/* 疑惑 */
-	output reg[`RegBus] 		  return_addr_o, // 保存的返回地址
+	// ?????ex??ε????
+	output reg[`AluOpBus]         aluop_o,      // id??????????е?????????
+	output reg[`AluSelBus]        alusel_o,     // id??????????е?????????
+	output reg[`RegBus]           reg1_o,       // id?????????????????????1
+	output reg[`RegBus]           reg2_o,       // id?????????????????????2
+	output reg[`RegAddrBus]       wd_o,         // id???????д????????????
+	output reg[`WriteBus]         wreg_o,       // id?????????д??????
+/* ??? */
+	output reg[`RegBus] 		  return_addr_o, // ??????????
 
-	// 输出到pc_reg模块的信号
-	output reg                    branch_flag_o,           	// 是否要跳转
-	output reg[`InstAddrBus]	  branch_target_address_o,  // 跳转的pc值
+	// ?????pc_reg???????
+	output reg                    branch_flag_o,           	// ???????
+	output reg[`InstAddrBus]	  branch_target_address_o,  // ?????pc?
 
 	output reg[`RegBus]		  	  inst_o,
 	output wire[`InstAddrBus]	  pc_o,
@@ -704,23 +704,23 @@ module id(
 				`INST_J :	begin
 					// return_addr_o <= `ZeroWord;
 					branch_flag_o <= `Branch;
-					branch_target_address_o <= {pc_i[31:28], inst_i[25:0], 2'b00};
+					branch_target_address_o <= {pc_plus_4[31:28], inst_i[25:0], 2'b00};
 				end
 				`INST_JAL :	begin
 					// return_addr_o <= `ZeroWord;
 					branch_flag_o <= `Branch;
-					branch_target_address_o <= {pc_i[31:28], inst_i[25:0], 2'b00};
+					branch_target_address_o <= {pc_plus_4[31:28], inst_i[25:0], 2'b00};
 				end
 				`INST_BEQ_B :	begin
 					if(rs == `RS_B && rt == `RT_B) begin
 						// return_addr_o <= `ZeroWord;
 						branch_flag_o <= `Branch;
-						branch_target_address_o <= pc_i + imm_sll2_sign;
+						branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 					end else begin // BEQ
 						if(reg1_o == reg2_o) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc_i + imm_sll2_sign;
+							branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 						end
 					end
 				end
@@ -730,13 +730,13 @@ module id(
 				`INST_BLEZ :	begin
 					// return_addr_o <= `ZeroWord;
 					branch_flag_o <= `Branch;
-					branch_target_address_o <= pc_i + imm_sll2_sign;
+					branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 				end
 				`INST_BNE :	begin
 					if(reg1_o != reg2_o) begin
 						// return_addr_o <= `ZeroWord;
 						branch_flag_o <= `Branch;
-						branch_target_address_o <= pc_i + imm_sll2_sign;
+						branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 					end
 				end
 				`INST_BLTZ_BLTZAL_BGEZ_BGEZAL_BAL :	begin
@@ -744,30 +744,30 @@ module id(
 						if(reg1_o[31] == 1'b1) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc_i + imm_sll2_sign;
+							branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 						end
 					end else if(rt == `RT_BLTZAL) begin
 						if(reg1_o[31] == 1'b1) begin
-							return_addr_o <= pc_plus_4;
+							return_addr_o <= pc_plus_8;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc_i + imm_sll2_sign;
+							branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 						end
 					end else if (rt == `RT_BGEZ) begin
 						if(reg1_o[31] == 1'b0) begin
 							// return_addr_o <= `ZeroWord;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc_i + imm_sll2_sign;
+							branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 						end
 					end else begin // if (rt == `RT_BGEZAL_BAL) 
 						if(rs == `RS_BAL) begin // BAL
-							return_addr_o <= pc_plus_4;
+							return_addr_o <= pc_plus_8;
 							branch_flag_o <= `Branch;
-							branch_target_address_o <= pc_i + imm_sll2_sign;
+							branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 						end else begin // BGEZAL
 							if(reg1_o[31] == 1'b0) begin
-								return_addr_o <= pc_plus_4;
+								return_addr_o <= pc_plus_8;
 								branch_flag_o <= `Branch;
-								branch_target_address_o <= pc_i + imm_sll2_sign;
+								branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
 							end
 						end
 					end
