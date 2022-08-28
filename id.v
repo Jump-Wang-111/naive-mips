@@ -639,8 +639,8 @@ module id(
 							reg1_addr_o <= rs;
 							// reg2_addr_o <= rt;
 							aluop_o <= `ALU_OP_JR;
-							// reg1_o <= reg1_data_i;
-							// reg2_o <= reg2_data_i;
+							reg1_o <= reg1_data_i;
+//							reg2_o <= reg2_data_i;
 							// wd_o <= rd;
 							// wreg_o <= `WriteEnable;
 						end
@@ -676,11 +676,19 @@ module id(
             stallreq_reg1 <= `Stop;
         end else if(reg1_read_o == `ReadEnable && ex_wreg_i == `WriteEnable && reg1_addr_o == ex_wd_i) begin
 //            reg1_conflict_flag <= `ExConflict;
-            reg1_o <= ex_wdata_i;
+            if(opcode == `INST_SW || opcode == `INST_SH || opcode == `INST_SB) begin
+                reg1_o <= ex_wdata_i + imm16_signe;
+            end else begin
+                reg1_o <= ex_wdata_i;
+            end
         end
         else if(reg1_read_o == `ReadEnable && mem_wreg_i == `WriteEnable && reg1_addr_o == mem_wd_i) begin
 //            reg1_conflict_flag <= `MemConflict;
-            reg1_o <= mem_wdata_i;
+            if(opcode == `INST_SW || opcode == `INST_SH || opcode == `INST_SB) begin
+                reg1_o <= mem_wdata_i + imm16_signe;
+            end else begin
+                reg1_o <= mem_wdata_i;
+            end
         end
 
         if(ex_inst_load == 1'b1 && ex_wd_i == reg2_addr_o && reg2_read_o == 1'b1) begin

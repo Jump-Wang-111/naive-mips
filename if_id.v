@@ -17,7 +17,7 @@ module if_id(
     );
    
 //    assign id_pc    = if_pc;
-    assign id_inst  = if_inst;
+//    assign id_inst  = if_inst;
 	always @(posedge clk) begin
         if(rst == `RstDisable) begin
             id_pc   <= `InitialPc;
@@ -30,5 +30,21 @@ module if_id(
             id_pc   <= if_pc;
         end
     end
+    
+    reg [5:0] stall_lock;
+    reg [31:0] inst_lock;
+    
+    always @(posedge clk) begin
+        if(rst == `RstDisable) begin
+            stall_lock <= 6'b000000;
+            inst_lock  <= `ZeroWord;
+        end
+        else begin
+            stall_lock <= stall;
+            inst_lock <= if_inst;
+        end
+    end
+    
+    assign id_inst = (stall_lock[1] == `Stop) ? inst_lock : if_inst;
 
 endmodule

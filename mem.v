@@ -60,7 +60,7 @@ module mem(
 			case(aluop_i)
 				`ALU_OP_LW : begin
 					mem_addr_o <= mem_addr_i;
-					// mem_we_o <= 4'b1111;
+					mem_we_o <= 4'b0000;
 					wdata_o <= mem_data_i;
 					mem_ce_o <= `ReadEnable;
 				end
@@ -144,12 +144,12 @@ module mem(
 						end
 					endcase
 				end
-				default : begin
+//				default : begin
 					
-				end
+//				end
 			endcase
         end
-       
+        
     end
     
 endmodule

@@ -142,19 +142,22 @@ module ex(
 					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SW :	begin
-					mem_addr_o <= reg1_i + reg2_i;
+					mem_addr_o <= reg1_i;
+					wdata_o <= reg2_i;
 				end
 				`ALU_OP_LB :	begin
 					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SB :	begin
 					mem_addr_o <= reg1_i;
+					wdata_o <= reg2_i;
 				end
 				`ALU_OP_LH :	begin
 					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SH :	begin
 					mem_addr_o <= reg1_i;
+					wdata_o <= reg2_i;
 			end
 			`ALU_OP_AND : begin
 				    wdata_o <= reg1_i & reg2_i;
@@ -169,19 +172,19 @@ module ex(
 					wdata_o <= reg1_i ^ reg2_i;
 				end
 				`ALU_OP_SLL : begin
-					wdata_o <= reg2_i << reg1_i[15:11];
+					wdata_o <= reg2_i << reg1_i[10:6];
 				end
 				`ALU_OP_SLLV : begin
 					wdata_o <= reg2_i << reg1_i[4:0];
 				end
 				`ALU_OP_SRL : begin
-					wdata_o <= reg2_i >> reg1_i[15:11];
+					wdata_o <= reg2_i >> reg1_i[10:6];
 				end
 				`ALU_OP_SRLV : begin
 					wdata_o <= reg2_i >> reg1_i[4:0];
 				end
 				`ALU_OP_SRA : begin
-					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[15:11]})) | reg2_i >> reg1_i[15:11];
+					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[10:6]})) | reg2_i >> reg1_i[10:6];
 				end
 				`ALU_OP_SRAV : begin
 					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[4:0]})) | reg2_i >> reg1_i[4:0];

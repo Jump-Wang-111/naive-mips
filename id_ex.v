@@ -44,7 +44,8 @@ module id_ex(
             ex_return_addr <= `ZeroWord;
             ex_inst <= `ZeroWord;
             ex_pc <= `InitialPc;
-        end else if(stall[2] == `Stop && stall[3] == `NoStop) begin
+        end 
+        else if(stall[2] == `Stop && stall[3] == `NoStop) begin
             ex_aluop <= `ALU_OP_NOP;
 	        ex_alusel <= `ALU_RES_NOP;
             ex_reg1 <= `ZeroWord;
@@ -54,7 +55,8 @@ module id_ex(
             ex_return_addr <= `ZeroWord;
             ex_inst <= `ZeroWord;
             ex_pc <= `InitialPc;
-        end else if(stall[2] == `NoStop) begin
+        end 
+        else if(stall[2] == `NoStop) begin
             ex_aluop <= id_aluop; 
 	        ex_alusel <= id_alusel;
             ex_reg1 <= id_reg1;

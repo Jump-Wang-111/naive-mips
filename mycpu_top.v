@@ -672,7 +672,7 @@ module mycpu_top(
 	wire[`WriteBus]          	wb_wreg_i;
 	wire[`RegBus]				wb_wdata_i;
 	wire[`InstAddrBus]			wb_pc_i;
-//	wire[`AluOpBus]				wb_aluop_stall_i;  
+	wire[`AluOpBus]				wb_aluop_i;  
 
 	mem_wb mem_wb0(
 		.clk(clk),
@@ -680,7 +680,7 @@ module mycpu_top(
 
 		.mem_wd(mem_wd_o),
 		.mem_wreg(mem_wreg_o),
-		.mem_wdata(mem_wdata_o),
+		.mem_wdata(mem_wdata_i),
 		.mem_pc(mem_pc_o),
 		.mem_aluop(mem_aluop_o),
 		.stall(stall),
@@ -688,15 +688,15 @@ module mycpu_top(
 		.wb_wd(wb_wd_i),
 		.wb_wreg(wb_wreg_i),
 		.wb_wdata(wb_wdata_i),
-		.wb_pc(wb_pc_i)
-//		.wb_aluop_stall(wb_aluop_stall_i)
+		.wb_pc(wb_pc_i),
+		.wb_aluop(wb_aluop_i)
 									       	
 	);
 
 	// wb
 	assign regfile_we 		= wb_wreg_i;
 	assign regfile_waddr 	= wb_wd_i;
-	assign regfile_wdata 	= wb_wdata_i;
+//	assign regfile_wdata 	= wb_wdata_i;
     
     // ctrl
     ctrl ctrl0(
@@ -712,7 +712,9 @@ module mycpu_top(
 	assign debug_wb_pc 		= wb_pc_i;
 	assign debug_wb_rf_wen 	= 4'b1111; //wb_wreg_i;
 	assign debug_wb_rf_wnum = wb_wd_i;
-	assign debug_wb_rf_wdata= wb_wdata_i;
+//	assign debug_wb_rf_wdata= wb_wdata_i;
+	assign debug_wb_rf_wdata= regfile_wdata;
     
+    assign regfile_wdata = ((wb_aluop_i == `ALU_OP_LW) || (wb_aluop_i == `ALU_OP_LH) || (wb_aluop_i == `ALU_OP_LB) || (wb_aluop_i == `ALU_OP_NOP)) ? data_sram_rdata : wb_wdata_i;
     
 endmodule
