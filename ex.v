@@ -30,7 +30,7 @@ module ex(
 );
 	
 	assign pc_o = pc_i;
-
+    assign stallreq = `NoStop;
 
 	always @(*) begin
 
@@ -157,7 +157,7 @@ module ex(
 					mem_addr_o <= reg1_i;
 			end
 			`ALU_OP_AND : begin
-				    rd <= reg1_o & reg2_o;
+				    wdata_o <= reg1_i & reg2_i;
 				end
 				`ALU_OP_NOR : begin
 					wdata_o <= ~(reg1_i | reg2_i);

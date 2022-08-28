@@ -36,6 +36,7 @@ module mem(
 );
     
 	assign pc_o = pc_i;
+	assign stallreq = `NoStop;
 
     always @(*) begin
         if(rst == `RstDisable) begin
@@ -84,7 +85,7 @@ module mem(
 							mem_we_o <= 4'b0001;
 						end
 						default : begin
-							wdata <= `ZeroWord;
+							wdata_o <= `ZeroWord;
 						end
 					endcase
 				end
@@ -101,7 +102,7 @@ module mem(
 							mem_we_o <= 4'b0011;
 						end
 						default : begin
-							wdata <= `ZeroWord;
+							wdata_o <= `ZeroWord;
 						end
 					endcase
 				end
@@ -144,7 +145,7 @@ module mem(
 					endcase
 				end
 				default : begin
-					mem_we_o <= 4b'1111;
+					
 				end
 			endcase
         end

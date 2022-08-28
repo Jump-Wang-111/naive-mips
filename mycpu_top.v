@@ -458,6 +458,10 @@ module mycpu_top(
     wire[`StopBus]              stall;
 	// example part
 	// pc
+	
+	assign pc_branch_flag = id_branch_flag_o;
+    assign pc_branch_target_address = id_branch_target_address_o;	
+    
 	pc_reg pc_reg0(
 		.clk(clk),
 		.rst(rst),
@@ -706,7 +710,7 @@ module mycpu_top(
     
 	// debug
 	assign debug_wb_pc 		= wb_pc_i;
-	assign debug_wb_rf_wen 	= wb_wreg_i;
+	assign debug_wb_rf_wen 	= 4'b1111; //wb_wreg_i;
 	assign debug_wb_rf_wnum = wb_wd_i;
 	assign debug_wb_rf_wdata= wb_wdata_i;
     
