@@ -4,46 +4,47 @@
 module id(
 
 	input wire					  rst,
-	input wire[`InstAddrBus]	  pc_i,         // id??????????pc
-	input wire[`InstBus]          inst_i,       // id??????
+	input wire[`InstAddrBus]	  pc_i,         // id阶段指令对应的pc
+	input wire[`InstBus]          inst_i,       // id阶段指令
 
-	// ex?????????
-	input wire					  ex_wreg_i,    // ex?????????д?????
-	input wire[`RegBus]			  ex_wdata_i,   // ex??????д?????????
-	input wire[`RegAddrBus]       ex_wd_i,      // ex??????д???????
+	// ex阶段运算结果
+	input wire					  ex_wreg_i,    // ex阶段指令是否写寄存器
+	input wire[`RegBus]			  ex_wdata_i,   // ex阶段指令写寄存器数据
+	input wire[`RegAddrBus]       ex_wd_i,      // ex阶段指令写寄存器号
+	input wire[`AluOpBus]         ex_aluop_i,   // ex阶段指令的运算类型，用于判断load相关
 	
-	// mem??ν??
-	input wire					  mem_wreg_i,   // mem?????????д?????
-	input wire[`RegBus]			  mem_wdata_i,  // mem??????д?????????
-	input wire[`RegAddrBus]       mem_wd_i,     // mem??????д???????
+	// mem阶段结果
+	input wire					  mem_wreg_i,   // mem阶段指令是否写寄存器
+	input wire[`RegBus]			  mem_wdata_i,  // mem阶段指令写寄存器数据
+	input wire[`RegAddrBus]       mem_wd_i,     // mem阶段指令写寄存器号
 	
-	// ??????regfile????
-	input wire[`RegBus]           reg1_data_i,  // ??regfile??????1??????
-	input wire[`RegBus]           reg2_data_i,  // ??regfile??????2??????
+	// 读到的regfile数据
+	input wire[`RegBus]           reg1_data_i,  // 读regfile得到的第1个数据
+	input wire[`RegBus]           reg2_data_i,  // 读regfile得到的第2个数据
+    
+	// 输出到regfile的读信号
+	output reg                    reg1_read_o,  // regfile第1个读使能
+	output reg                    reg2_read_o,  // regfile第2个读使能
+	output reg[`RegAddrBus]       reg1_addr_o,  // regfile第1个读寄存器号
+	output reg[`RegAddrBus]       reg2_addr_o, 	// regfile第2个读寄存器号
+	
+	// 输出到ex阶段的信号
+	output reg[`AluOpBus]         aluop_o,      // id阶段指令要进行的运算子类
+	output reg[`AluSelBus]        alusel_o,     // id阶段指令要进行的运算类型
+	output reg[`RegBus]           reg1_o,       // id阶段指令要进行运算的操作数1
+	output reg[`RegBus]           reg2_o,       // id阶段指令要进行运算的操作数2
+	output reg[`RegAddrBus]       wd_o,         // id阶段指令要写入的目的寄存器号
+	output reg[`WriteBus]         wreg_o,       // id阶段指令是否写入寄存器
+/* 疑惑 */
+	output reg[`RegBus] 		  return_addr_o, // 保存的返回地址
 
-	// ?????regfile??????
-	output reg                    reg1_read_o,  // regfile??1???????
-	output reg                    reg2_read_o,  // regfile??2???????
-	output reg[`RegAddrBus]       reg1_addr_o,  // regfile??1???????????
-	output reg[`RegAddrBus]       reg2_addr_o, 	// regfile??2???????????
-	
-	// ?????ex??ε????
-	output reg[`AluOpBus]         aluop_o,      // id??????????е?????????
-	output reg[`AluSelBus]        alusel_o,     // id??????????е?????????
-	output reg[`RegBus]           reg1_o,       // id?????????????????????1
-	output reg[`RegBus]           reg2_o,       // id?????????????????????2
-	output reg[`RegAddrBus]       wd_o,         // id???????д????????????
-	output reg[`WriteBus]         wreg_o,       // id?????????д??????
-/* ??? */
-	output reg[`RegBus] 		  return_addr_o, // ??????????
-
-	// ?????pc_reg???????
-	output reg                    branch_flag_o,           	// ???????
-	output reg[`InstAddrBus]	  branch_target_address_o,  // ?????pc?
+	// 输出到pc_reg模块的信号
+	output reg                    branch_flag_o,           	// 是否要跳转
+	output reg[`InstAddrBus]	  branch_target_address_o,  // 跳转的pc值
 
 	output reg[`RegBus]		  	  inst_o,
 	output wire[`InstAddrBus]	  pc_o,
-	output reg 			      	  stallreq
+	output wire 			      stallreq
 			
 );
 
@@ -57,7 +58,7 @@ module id(
 	wire [25:0] imm26 = inst_i[25:0];
 	wire [31:0] imm16_signe = {{16{imm16[15]}}, imm16};
 	wire [31:0] imm16_unsigne = {16'b0, imm16};
-	wire [31:0] imm26_signe = {{6{imm16[25]}}, imm26};
+	wire [31:0] imm26_signe = {{6{imm26[25]}}, imm26};
 	wire [31:0] imm26_unsigne = {6'b0, imm26};
 
 	reg [1:0]		reg1_conflict_flag;
@@ -67,7 +68,17 @@ module id(
 	wire [`InstAddrBus] pc_plus_4 = pc_i + 4;
 	wire [`InstAddrBus] pc_plus_8 = pc_i + 8;
 	wire [`RegBus]		imm_sll2_sign = {imm16_signe[29:0], 2'b00};
-
+    
+    // load relate
+    reg stallreq_reg1;
+    reg stallreq_reg2;
+    wire ex_inst_load;
+    
+    assign stallreq = stallreq_reg1 | stallreq_reg2;
+    assign ex_inst_load = ((ex_aluop_i == `ALU_OP_LW) || 
+                           (ex_aluop_i == `ALU_OP_LH) || 
+                           (ex_aluop_i == `ALU_OP_LB)) ? 1'b1 : 1'b0;
+    
 	always @(*) begin
 		if(rst == `RstDisable) begin
 			reg1_read_o <= `ReadDisable;
@@ -81,24 +92,9 @@ module id(
 			wd_o <= `ZeroRegAddr;
 			wreg_o <= `WriteDisable;
 			inst_o <= `ZeroWord;
-			stallreq <= `NoStop;
 			reg1_conflict_flag <= `NoConflict;
 			reg2_conflict_flag <= `NoConflict;
 		end else begin
-
-			if(reg1_read_o == `ReadEnable && ex_wreg_i == `WriteEnable && reg1_addr_o == ex_wd_i) begin
-				reg1_conflict_flag <= `ExConflict;
-			end
-			else if(reg1_read_o == `ReadEnable && mem_wreg_i == `WriteEnable && reg1_addr_o == mem_wd_i) begin
-				reg1_conflict_flag <= `MemConflict;
-			end
-
-			if(reg2_read_o == `ReadEnable && ex_wreg_i == `WriteEnable && reg2_addr_o == ex_wd_i) begin
-				reg2_conflict_flag <= `ExConflict;
-			end
-			else if(reg2_read_o == `ReadEnable && mem_wreg_i == `WriteEnable && reg2_addr_o == mem_wd_i) begin
-				reg2_conflict_flag <= `MemConflict;
-			end
 
 			reg1_read_o <= `ReadDisable;
 			reg2_read_o <= `ReadDisable;
@@ -111,7 +107,6 @@ module id(
 			wd_o <= `ZeroRegAddr;
 			wreg_o <= `WriteDisable;
 			inst_o <= inst_i;
-			stallreq <= `NoStop;
 			case(opcode)
 				`INST_ORI :	begin
 					reg1_read_o <= `ReadEnable;
@@ -240,8 +235,8 @@ module id(
 						reg1_addr_o <= rs;
 						reg2_addr_o <= rt;
 						aluop_o <= `ALU_OP_BEQ;
-						//reg1_o <= `ZeroWord;
-						//reg2_o <= `ZeroWord;
+                        reg1_o <= reg1_data_i;
+                        reg2_o <= reg2_data_i;
 						//wd_o <= ZeroRegAddr;
 						//wreg_o <= `WriteDisable;
 					end
@@ -252,8 +247,8 @@ module id(
 					reg1_addr_o <= rs;
 					//reg2_addr_o <= `ZeroRegAddr;
 					aluop_o <= `ALU_OP_BGTZ;
-					//reg1_o <= `ZeroWord;
-					//reg2_o <= `ZeroWord;
+					reg1_o <= reg1_data_i;
+					reg2_o <= reg2_data_i;
 					//wd_o <= ZeroRegAddr;
 					//wreg_o <= `WriteDisable;					
 				end
@@ -263,8 +258,8 @@ module id(
 					reg1_addr_o <= rs;
 					//reg2_addr_o <= `ZeroRegAddr;
 					aluop_o <= `ALU_OP_BLEZ;
-					//reg1_o <= `ZeroWord;
-					//reg2_o <= `ZeroWord;
+					reg1_o <= reg1_data_i;
+					reg2_o <= reg2_data_i;
 					//wd_o <= ZeroRegAddr;
 					//wreg_o <= `WriteDisable;
 				end
@@ -274,8 +269,8 @@ module id(
 					reg1_addr_o <= rs;
 					reg2_addr_o <= rt;
 					aluop_o <= `ALU_OP_BNE;
-					//reg1_o <= `ZeroWord;
-					//reg2_o <= `ZeroWord;
+					reg1_o <= reg1_data_i;
+					reg2_o <= reg2_data_i;
 					//wd_o <= `ZeroRegAddr;
 					//wreg_o <= `WriteDisable;
 				end
@@ -286,8 +281,8 @@ module id(
 						reg1_addr_o <= rs;
 						//reg2_addr_o <= `ZeroRegAddr;
 						aluop_o <= `ALU_OP_BLTZ;
-						//reg1_o <= `ZeroWord;
-						//reg2_o <= `ZeroWord;
+                        reg1_o <= reg1_data_i;
+                        reg2_o <= reg2_data_i;
 						//wd_o <= ZeroRegAddr;
 						//wreg_o <= `WriteDisable;
 					end else if(rt == `RT_BLTZAL) begin
@@ -296,8 +291,8 @@ module id(
 						reg1_addr_o <= rs;
 						//reg2_addr_o <= `ZeroRegAddr;
 						aluop_o <= `ALU_OP_BLTZAL;
-						//reg1_o <= `ZeroWord;
-						//reg2_o <= `ZeroWord;
+                        reg1_o <= reg1_data_i;
+                        reg2_o <= reg2_data_i;
 						wd_o <= 31;
 						wreg_o <= `WriteEnable;
 					end else if (rt == `RT_BGEZ) begin
@@ -306,8 +301,8 @@ module id(
 						reg1_addr_o <= rs;
 						//reg2_addr_o <= `ZeroRegAddr;
 						aluop_o <= `ALU_OP_BGEZ;
-						//reg1_o <= `ZeroWord;
-						//reg2_o <= `ZeroWord;
+                        reg1_o <= reg1_data_i;
+                        reg2_o <= reg2_data_i;
 						//wd_o <= ZeroRegAddr;
 						//wreg_o <= `WriteDisable;
 					end else begin // if (rt == `RT_BGEZAL_BAL) 
@@ -644,8 +639,8 @@ module id(
 							reg1_addr_o <= rs;
 							// reg2_addr_o <= rt;
 							aluop_o <= `ALU_OP_JR;
-							// reg1_o <= reg1_data_i;
-							// reg2_o <= reg2_data_i;
+							reg1_o <= reg1_data_i;
+//							reg2_o <= reg2_data_i;
 							// wd_o <= rd;
 							// wreg_o <= `WriteEnable;
 						end
@@ -670,27 +665,63 @@ module id(
 				end
 			endcase
 
-			if(reg1_conflict_flag == `ExConflict) begin
-				reg1_o <= ex_wdata_i;
-				reg1_conflict_flag <= `NoConflict;
-			end
-			else if(reg1_conflict_flag == `MemConflict) begin
-				reg1_o <= mem_wdata_i;
-				reg1_conflict_flag <= `NoConflict;
-			end
-
-			if(reg2_conflict_flag == `ExConflict) begin
-				reg2_o <= ex_wdata_i;
-				reg2_conflict_flag <= `NoConflict;
-			end
-			else if(reg2_conflict_flag == `MemConflict) begin
-				reg2_o <= mem_wdata_i;
-				reg2_conflict_flag <= `NoConflict;
-			end
 		end
 	end
 
-	always @(*) begin
+    always @(*) begin
+        // load relate
+        stallreq_reg1 <= `NoStop;
+        stallreq_reg2 <= `NoStop;
+        if(ex_inst_load == 1'b1 && ex_wd_i == reg1_addr_o && reg1_read_o == 1'b1) begin
+            stallreq_reg1 <= `Stop;
+        end else if(reg1_read_o == `ReadEnable && ex_wreg_i == `WriteEnable && reg1_addr_o == ex_wd_i) begin
+//            reg1_conflict_flag <= `ExConflict;
+            if(opcode == `INST_SW || opcode == `INST_SH || opcode == `INST_SB) begin
+                reg1_o <= ex_wdata_i + imm16_signe;
+            end else begin
+                reg1_o <= ex_wdata_i;
+            end
+        end
+        else if(reg1_read_o == `ReadEnable && mem_wreg_i == `WriteEnable && reg1_addr_o == mem_wd_i) begin
+//            reg1_conflict_flag <= `MemConflict;
+            if(opcode == `INST_SW || opcode == `INST_SH || opcode == `INST_SB) begin
+                reg1_o <= mem_wdata_i + imm16_signe;
+            end else begin
+                reg1_o <= mem_wdata_i;
+            end
+        end
+
+        if(ex_inst_load == 1'b1 && ex_wd_i == reg2_addr_o && reg2_read_o == 1'b1) begin
+            stallreq_reg2 <= `Stop;
+        end else if(reg2_read_o == `ReadEnable && ex_wreg_i == `WriteEnable && reg2_addr_o == ex_wd_i) begin
+//            reg2_conflict_flag <= `ExConflict;
+            reg2_o <= ex_wdata_i;
+        end
+        else if(reg2_read_o == `ReadEnable && mem_wreg_i == `WriteEnable && reg2_addr_o == mem_wd_i) begin
+//            reg2_conflict_flag <= `MemConflict;
+            reg2_o <= mem_wdata_i;
+        end
+        
+//        if(reg1_conflict_flag == `ExConflict) begin
+//            reg1_o <= ex_wdata_i;
+//            reg1_conflict_flag <= `NoConflict;
+//        end
+//        else if(reg1_conflict_flag == `MemConflict) begin
+//            reg1_o <= mem_wdata_i;
+//            reg1_conflict_flag <= `NoConflict;
+//        end
+
+//        if(reg2_conflict_flag == `ExConflict) begin
+//            reg2_o <= ex_wdata_i;
+//            reg2_conflict_flag <= `NoConflict;
+//        end
+//        else if(reg2_conflict_flag == `MemConflict) begin
+//            reg2_o <= mem_wdata_i;
+//            reg2_conflict_flag <= `NoConflict;
+//        end
+    end
+    
+    always @(*) begin
 		if(rst == `RstDisable) begin
 			return_addr_o <= `ZeroWord;
 			branch_flag_o <= `NotBranch;
@@ -707,7 +738,7 @@ module id(
 					branch_target_address_o <= {pc_plus_4[31:28], inst_i[25:0], 2'b00};
 				end
 				`INST_JAL :	begin
-					// return_addr_o <= `ZeroWord;
+					return_addr_o <= pc_plus_8;
 					branch_flag_o <= `Branch;
 					branch_target_address_o <= {pc_plus_4[31:28], inst_i[25:0], 2'b00};
 				end
@@ -725,12 +756,17 @@ module id(
 					end
 				end
 				`INST_BGTZ :	begin
-					// leave for little cute
+					if(reg1_o > 0) begin
+						branch_flag_o <= `Branch;
+						branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
+					end
 				end
 				`INST_BLEZ :	begin
 					// return_addr_o <= `ZeroWord;
-					branch_flag_o <= `Branch;
-					branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
+					if(reg1_o <= 0) begin
+						branch_flag_o <= `Branch;
+						branch_target_address_o <= pc_plus_4 + imm_sll2_sign;
+					end
 				end
 				`INST_BNE :	begin
 					if(reg1_o != reg2_o) begin
@@ -771,6 +807,21 @@ module id(
 							end
 						end
 					end
+				end
+				`INST_SPECIAL : begin
+				    case(func) 
+				        `FUNC_JR : begin
+				            branch_flag_o <= `Branch;
+							branch_target_address_o <= reg1_o;
+				        end
+				        `FUNC_JALR : begin
+				            branch_flag_o <= `Branch;
+							branch_target_address_o <= reg1_o;
+				        end
+				    endcase
+				end
+				default : begin
+				
 				end
 			endcase
 		end // else

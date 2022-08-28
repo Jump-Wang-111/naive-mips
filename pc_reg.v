@@ -7,7 +7,7 @@ module pc_reg(
 	
 	input wire 					branch_flag_i,            // 
 	input wire[`InstAddrBus]	branch_target_address_i,  // 
-	input wire					stall,
+	input wire[`StopBus]		stall,
 
 	output reg[`InstAddrBus]	pc,                         //
 	output wire[`InstAddrBus]   pc_three,                  //
@@ -23,7 +23,7 @@ module pc_reg(
             pc <= `InitialPc;
             ce <= `ReadEnable;
         end
-        else begin
+        else if(stall[0] == `NoStop) begin
             ce <= `ReadEnable;
             if(branch_flag_i == `Branch) begin
                 pc <= branch_target_address_i;

@@ -4,38 +4,39 @@ module mem(
 
 	input wire						rst,
 	
-	// À´×ÔÖ´ÐÐ½×¶ÎµÄÐÅºÅ
-	input wire[`RegAddrBus]       	wd_i,       // mem½×¶ÎÖ¸ÁîÐ´Ä¿µÄ¼Ä´æÆ÷ºÅ
-	input wire[`WriteBus]           wreg_i,    // mem½×¶ÎÖ¸ÁîÐ´¼Ä´æÆ÷Ê¹ÄÜ
-	input wire[`RegBus]				wdata_i,    // mem½×¶ÎÖ¸ÁîÐ´ÈëÄ¿µÄ¼Ä´æÆ÷Êý¾Ý
+	// ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð½×¶Îµï¿½ï¿½Åºï¿½
+	input wire[`RegAddrBus]       	wd_i,       // memï¿½×¶ï¿½Ö¸ï¿½ï¿½Ð´Ä¿ï¿½Ä¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
+	input wire[`WriteBus]           wreg_i,    // memï¿½×¶ï¿½Ö¸ï¿½ï¿½Ð´ï¿½Ä´ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
+	input wire[`RegBus]				wdata_i,    // memï¿½×¶ï¿½Ö¸ï¿½ï¿½Ð´ï¿½ï¿½Ä¿ï¿½Ä¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	
-	input wire[`AluOpBus]			aluop_i,	// mem½×¶ÎÖ¸ÁîÒª½øÐÐµÄÔËËã×ÓÀàÐÍ
-	input wire[`RegBus]				mem_addr_i,	// mem½×¶ÎÖ¸Áî·Ã´æaddress
-	input wire[`RegBus]				reg2_i,		// mem½×¶Î·Ã´æÊý¾Ý
+	input wire[`AluOpBus]			aluop_i,	// memï¿½×¶ï¿½Ö¸ï¿½ï¿½Òªï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	input wire[`RegBus]				mem_addr_i,	// memï¿½×¶ï¿½Ö¸ï¿½ï¿½Ã´ï¿½address
+	input wire[`RegBus]				reg2_i,		// memï¿½×¶Î·Ã´ï¿½ï¿½ï¿½ï¿½ï¿½
 	input wire[`InstAddrBus]		pc_i,
 	
 	// data from ram
 	input wire[`RegBus]          	mem_data_i,
 	
-	// ËÍµ½wb½×¶ÎµÄÐÅºÅ
-	output reg[`RegAddrBus]     	wd_o,          // mem½×¶ÎÖ¸ÁîÐ´Ä¿µÄ¼Ä´æÆ÷ºÅ
-	output reg[`WriteBus]           wreg_o,       // mem½×¶ÎÖ¸ÁîÐ´¼Ä´æÆ÷Ê¹ÄÜ
-	output reg[`RegBus]				wdata_o,      // mem½×¶ÎÖ¸ÁîÐ´ÈëÄ¿µÄ¼Ä´æÆ÷Êý¾Ý
+	// ï¿½Íµï¿½wbï¿½×¶Îµï¿½ï¿½Åºï¿½
+	output reg[`RegAddrBus]     	wd_o,          // memï¿½×¶ï¿½Ö¸ï¿½ï¿½Ð´Ä¿ï¿½Ä¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
+	output reg[`WriteBus]           wreg_o,       // memï¿½×¶ï¿½Ö¸ï¿½ï¿½Ð´ï¿½Ä´ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
+	output reg[`RegBus]				wdata_o,      // memï¿½×¶ï¿½Ö¸ï¿½ï¿½Ð´ï¿½ï¿½Ä¿ï¿½Ä¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    // ËÍµ½ram
-	output reg[`RegBus]				mem_addr_o,	// ·Ã´æaddress
-	output reg[3:0]					mem_we_o,	// ·Ã´æÐ´Ê¹ÄÜ
-	output reg[`RegBus]				mem_data_o, // ·Ã´æÐ´Êý¾Ý
-	output reg						mem_ce_o,	// ramÊ¹ÄÜÐÅºÅ
+    // ï¿½Íµï¿½ram
+	output reg[`RegBus]				mem_addr_o,	// ï¿½Ã´ï¿½address
+	output reg[3:0]					mem_we_o,	// ï¿½Ã´ï¿½Ð´Ê¹ï¿½ï¿½
+	output reg[`RegBus]				mem_data_o, // ï¿½Ã´ï¿½Ð´ï¿½ï¿½ï¿½ï¿½
+	output reg						mem_ce_o,	// ramÊ¹ï¿½ï¿½ï¿½Åºï¿½
 	
 	
-	output wire[`InstAddrBus]		pc_o,       // mem½×¶ÎÖ¸Áîpc
-	output reg[`AluOpBus]			aluop_o,    // mem½×¶ÎÖ¸ÁîÔËËã×ÓÀàÐÍ
-	output reg 						stallreq    // mem½×¶ÎÔÝÍ£Á÷Ë®Ïß¿ØÖÆÐÅºÅ
+	output wire[`InstAddrBus]		pc_o,       // memï¿½×¶ï¿½Ö¸ï¿½ï¿½pc
+	output reg[`AluOpBus]			aluop_o,    // memï¿½×¶ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	output wire 					stallreq    // memï¿½×¶ï¿½ï¿½ï¿½Í£ï¿½ï¿½Ë®ï¿½ß¿ï¿½ï¿½ï¿½ï¿½Åºï¿½
 
 );
     
 	assign pc_o = pc_i;
+	assign stallreq = `NoStop;
 
     always @(*) begin
         if(rst == `RstDisable) begin
@@ -59,7 +60,7 @@ module mem(
 			case(aluop_i)
 				`ALU_OP_LW : begin
 					mem_addr_o <= mem_addr_i;
-					// mem_we_o <= 4'b1111;
+					mem_we_o <= 4'b0000;
 					wdata_o <= mem_data_i;
 					mem_ce_o <= `ReadEnable;
 				end
@@ -148,7 +149,7 @@ module mem(
 				end
 			endcase
         end
-       
+        
     end
     
 endmodule

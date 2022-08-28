@@ -25,11 +25,12 @@ module ex(
 	output reg[`RegBus]			    reg2_o,        // ex??¦Å?2????????
 
 	output wire[`InstAddrBus]		pc_o,          // ex??????pc
-	output reg 						stallreq       // ex??????????????????
+	output wire 				    stallreq       // ex??????????????????
 	
 );
 	
 	assign pc_o = pc_i;
+    assign stallreq = `NoStop;
 
 	always @(*) begin
 
@@ -40,7 +41,6 @@ module ex(
 			aluop_o 	<= `ALU_OP_NOP;
 			mem_addr_o 	<= `ZeroWord;
 			reg2_o 		<= `ZeroWord;
-			stallreq 	<= `NoStop;
 		end
 		else begin
 			wd_o 		<= wd_i;
@@ -49,7 +49,6 @@ module ex(
 			aluop_o 	<= aluop_i;
 			mem_addr_o 	<= `ZeroWord;
 			reg2_o 		<= reg2_i;
-			stallreq 	<= `NoStop;
 
 			case(aluop_i)
 				`ALU_OP_ORI :	begin
@@ -72,7 +71,28 @@ module ex(
 					wdata_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SLTI :	begin
-					// leave for little cute
+					if(reg1_i[31] < reg2_i[31]) begin
+						wdata_o <= 0;
+					end
+					else if(reg1_i[31] > reg2_i[31]) begin
+						wdata_o <= 1;
+					end
+					else if(reg1_i[31] == 1'b0) begin
+						if(reg1_i < reg2_i) begin
+							wdata_o <= 1;
+						end
+						else begin
+							wdata_o <= 0;
+						end
+					end
+					else if(reg1_i[31] == 1'b1) begin
+						if(reg1_i < reg2_i) begin
+							wdata_o <= 0;
+						end
+						else begin
+							wdata_o <= 1;
+						end
+					end
 				end
 				`ALU_OP_SLTIU :	begin
 					if(reg1_i < reg2_i) begin
@@ -104,7 +124,7 @@ module ex(
 
 				end
 				`ALU_OP_BLTZ :	begin
-					// leave for little cute
+					
 				end
 				`ALU_OP_BLTZAL :	begin
 					wdata_o <= return_addr_i;
@@ -122,46 +142,49 @@ module ex(
 					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SW :	begin
-					mem_addr_o <= reg1_i + reg2_i;
+					mem_addr_o <= reg1_i;
+					wdata_o <= reg2_i;
 				end
 				`ALU_OP_LB :	begin
 					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SB :	begin
 					mem_addr_o <= reg1_i;
+					wdata_o <= reg2_i;
 				end
 				`ALU_OP_LH :	begin
-					// leave for little cute
+					mem_addr_o <= reg1_i + reg2_i;
 				end
 				`ALU_OP_SH :	begin
 					mem_addr_o <= reg1_i;
+					wdata_o <= reg2_i;
 			end
 			`ALU_OP_AND : begin
-				// leave for little cute
+				    wdata_o <= reg1_i & reg2_i;
 				end
 				`ALU_OP_NOR : begin
-					rd <= ~(reg1_o | reg2_o);
+					wdata_o <= ~(reg1_i | reg2_i);
 				end
 				`ALU_OP_OR : begin
-					rd <= reg1_o | reg2_o;
+					wdata_o <= reg1_i | reg2_i;
 				end
 				`ALU_OP_XOR : begin
-					rd <= reg1_o ^ reg2_o;
+					wdata_o <= reg1_i ^ reg2_i;
 				end
 				`ALU_OP_SLL : begin
-					wdata_o <= reg2_i << reg1_i[15:11];
+					wdata_o <= reg2_i << reg1_i[10:6];
 				end
 				`ALU_OP_SLLV : begin
 					wdata_o <= reg2_i << reg1_i[4:0];
 				end
 				`ALU_OP_SRL : begin
-					wdata_o <= reg2_i >> reg1_i[15:11];
+					wdata_o <= reg2_i >> reg1_i[10:6];
 				end
 				`ALU_OP_SRLV : begin
-					// leave for little cute
+					wdata_o <= reg2_i >> reg1_i[4:0];
 				end
 				`ALU_OP_SRA : begin
-					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[15:11]})) | reg2_i >> reg1_i[15:11];
+					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[10:6]})) | reg2_i >> reg1_i[10:6];
 				end
 				`ALU_OP_SRAV : begin
 					wdata_o <= ({32{reg2_i[31]}} << (6'd32 - {1'b0, reg1_i[4:0]})) | reg2_i >> reg1_i[4:0];
@@ -181,7 +204,9 @@ module ex(
 					end
 				end
 				`ALU_OP_MOVZ : begin
-					// leave for little cute
+					if(reg2_i == 0) begin
+						wdata_o <= reg1_i;
+					end
 				end
 				`ALU_OP_ADD : begin
 					wdata_o <= reg1_i + reg2_i;

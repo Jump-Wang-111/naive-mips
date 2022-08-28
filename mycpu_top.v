@@ -321,7 +321,7 @@ module mycpu_top(
 									       	
 // 	);
 
-// 	//ä»wb_ramæ¨¡å—ç›´æ¥é€åˆ°å¯„å­˜ï¿½??
+// 	//ä»wb_ramæ¨¡å—ç›´æ¥é€åˆ°å¯„å­˜ï¿???
 // 	wire[`RegAddrBus] wd; 
 // 	wire[`WriteBus] we;
 // 	wire[`RegBus] wdata;
@@ -454,15 +454,21 @@ module mycpu_top(
 	wire[`AluOpBus]				mem_aluop_o;
 	wire 						mem_stallreq;
 
+    // ctrl
+    wire[`StopBus]              stall;
 	// example part
 	// pc
+	
+	assign pc_branch_flag = id_branch_flag_o;
+    assign pc_branch_target_address = id_branch_target_address_o;	
+    
 	pc_reg pc_reg0(
 		.clk(clk),
 		.rst(rst),
 			
 		.branch_flag_i(pc_branch_flag),							//input
 		.branch_target_address_i(pc_branch_target_address),		//input
-		.stall(pc_stall),
+		.stall(stall),
 
 		.pc(pc_pc),
 		.pc_three(pc_three),
@@ -480,8 +486,8 @@ module mycpu_top(
 
 		.if_pc(if_pc),
 		.if_inst(if_inst),
-		.stall(if_id_stall),
-		.stall_aluop(if_id_stall_aluop),
+		.stall(stall),
+//		.stall_aluop(if_id_stall_aluop),
 
 		.id_pc(id_pc_i),
 		.id_inst(id_inst_i)      	
@@ -500,6 +506,7 @@ module mycpu_top(
 		.ex_wreg_i(ex_wreg_o),
 		.ex_wdata_i(ex_wdata_o),
 		.ex_wd_i(ex_wd_o),
+		.ex_aluop_i(ex_aluop_o),
 
 		// solve data conflict
 		.mem_wreg_i(mem_wreg_o),
@@ -570,6 +577,7 @@ module mycpu_top(
 		.id_return_addr(id_return_addr_o),
 		.id_inst(id_inst_o),
 		.id_pc(id_pc_o),
+		.stall(stall),
 	
 		.ex_aluop(ex_aluop_i),
 		.ex_alusel(ex_alusel_i),
@@ -619,6 +627,7 @@ module mycpu_top(
 		.ex_mem_addr(ex_mem_addr_o),
 		.ex_reg2(ex_reg2_o),
 		.ex_pc(ex_pc_o),
+		.stall(stall),
 
 		.mem_wd(mem_wd_i),
 		.mem_wreg(mem_wreg_i),
@@ -663,7 +672,7 @@ module mycpu_top(
 	wire[`WriteBus]          	wb_wreg_i;
 	wire[`RegBus]				wb_wdata_i;
 	wire[`InstAddrBus]			wb_pc_i;
-	wire[`AluOpBus]				wb_aluop_stall_i;  
+	wire[`AluOpBus]				wb_aluop_i;  
 
 	mem_wb mem_wb0(
 		.clk(clk),
@@ -671,28 +680,41 @@ module mycpu_top(
 
 		.mem_wd(mem_wd_o),
 		.mem_wreg(mem_wreg_o),
-		.mem_wdata(mem_wdata_o),
+		.mem_wdata(mem_wdata_i),
 		.mem_pc(mem_pc_o),
 		.mem_aluop(mem_aluop_o),
+		.stall(stall),
 	
 		.wb_wd(wb_wd_i),
 		.wb_wreg(wb_wreg_i),
 		.wb_wdata(wb_wdata_i),
 		.wb_pc(wb_pc_i),
-		.wb_aluop_stall(wb_aluop_stall_i)
+		.wb_aluop(wb_aluop_i)
 									       	
 	);
 
 	// wb
 	assign regfile_we 		= wb_wreg_i;
 	assign regfile_waddr 	= wb_wd_i;
-	assign regfile_wdata 	= wb_wdata_i;
+//	assign regfile_wdata 	= wb_wdata_i;
+    
+    // ctrl
+    ctrl ctrl0(
+        .rst(rst),
+        .stallreq_from_id(id_stallreq),   // id½×¶Î·¢³öµÄÁ÷Ë®ÏßÔİÍ£ĞÅºÅ
+        .stallreq_from_ex(ex_stallreq),   // ex½×¶Î·¢³öµÄÁ÷Ë®ÏßÔİÍ£ĞÅºÅ
+        .stallreq_from_mem(mem_stallreq),  // mem½×¶Î·¢³öµÄÁ÷Ë®ÏßÔİÍ£ĞÅºÅ
 
+        .stall(stall)               // ¿ØÖÆÁ÷Ë®ÏßÔİÍ£µÄĞÅºÅ
+    );
+    
 	// debug
 	assign debug_wb_pc 		= wb_pc_i;
-	assign debug_wb_rf_wen 	= wb_wreg_i;
+	assign debug_wb_rf_wen 	= 4'b1111; //wb_wreg_i;
 	assign debug_wb_rf_wnum = wb_wd_i;
-	assign debug_wb_rf_wdata= wb_wdata_i;
-
-
+//	assign debug_wb_rf_wdata= wb_wdata_i;
+	assign debug_wb_rf_wdata= regfile_wdata;
+    
+    assign regfile_wdata = ((wb_aluop_i == `ALU_OP_LW) || (wb_aluop_i == `ALU_OP_LH) || (wb_aluop_i == `ALU_OP_LB) || (wb_aluop_i == `ALU_OP_NOP)) ? data_sram_rdata : wb_wdata_i;
+    
 endmodule
