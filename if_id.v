@@ -33,6 +33,7 @@ module if_id(
     
     reg [5:0] stall_lock;
     reg [31:0] inst_lock;
+    reg [31:0] inst_lock1;
     
     always @(posedge clk) begin
         if(rst == `RstDisable) begin
@@ -42,9 +43,11 @@ module if_id(
         else begin
             stall_lock <= stall;
             inst_lock <= if_inst;
+            inst_lock1 <= inst_lock;
         end
     end
     
-    assign id_inst = (stall_lock[1] == `Stop) ? inst_lock : if_inst;
+    assign id_inst = (stall_lock[1] == `Stop && stall[1] == `Stop) ? inst_lock :
+                     (stall_lock[1] == `Stop && stall[1] == `NoStop) ? inst_lock1: if_inst;
 
 endmodule

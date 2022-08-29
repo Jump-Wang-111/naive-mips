@@ -54,7 +54,7 @@ module id_ex(
             ex_wreg <= `WriteDisable;
             ex_return_addr <= `ZeroWord;
             ex_inst <= `ZeroWord;
-            ex_pc <= `InitialPc;
+            ex_pc <= id_pc;
         end 
         else if(stall[2] == `NoStop) begin
             ex_aluop <= id_aluop; 

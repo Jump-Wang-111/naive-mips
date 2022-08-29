@@ -36,7 +36,7 @@ module mem(
 );
     
 	assign pc_o = pc_i;
-	assign stallreq = `NoStop;
+	assign stallreq = ((aluop_i == `ALU_OP_LW) || (aluop_i == `ALU_OP_LB) || (aluop_i == `ALU_OP_LH)) ? `Stop : `NoStop;
 
     always @(*) begin
         if(rst == `RstDisable) begin
