@@ -87,10 +87,10 @@ module ex(
 					end
 					else if(reg1_i[31] == 1'b1) begin
 						if(reg1_i < reg2_i) begin
-							wdata_o <= 0;
+							wdata_o <= 1;
 						end
 						else begin
-							wdata_o <= 1;
+							wdata_o <= 0;
 						end
 					end
 				end
@@ -237,13 +237,12 @@ module ex(
 					end
 					else if(reg1_i[31] == 1'b1) begin
 						if(reg1_i < reg2_i) begin
-							wdata_o <= 0;
-						end
-						else begin
 							wdata_o <= 1;
 						end
+						else begin
+							wdata_o <= 0;
+						end
 					end
-					
 				end
 				`ALU_OP_SLTU : begin
 					if(reg1_i < reg2_i) begin
