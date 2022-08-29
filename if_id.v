@@ -32,6 +32,7 @@ module if_id(
     end
     
     reg [5:0] stall_lock;
+    reg [5:0] stall_lock1;
     reg [31:0] inst_lock;
     reg [31:0] inst_lock1;
     
@@ -42,12 +43,13 @@ module if_id(
         end
         else begin
             stall_lock <= stall;
+            stall_lock1 <= stall_lock;
             inst_lock <= if_inst;
             inst_lock1 <= inst_lock;
         end
     end
     
-    assign id_inst = (stall_lock[1] == `Stop && stall[1] == `Stop) ? inst_lock :
-                     (stall_lock[1] == `Stop && stall[1] == `NoStop) ? inst_lock1: if_inst;
+    assign id_inst = (stall_lock1[1] == `NoStop && stall_lock[1] == `Stop) ? inst_lock :
+                     (stall_lock1[1] == `Stop && stall_lock[1] == `Stop) ? inst_lock1 : if_inst;
 
 endmodule
