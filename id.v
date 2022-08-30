@@ -35,7 +35,6 @@ module id(
 	output reg[`RegBus]           reg2_o,       // id阶段指令要进行运算的操作数2
 	output reg[`RegAddrBus]       wd_o,         // id阶段指令要写入的目的寄存器号
 	output reg[`WriteBus]         wreg_o,       // id阶段指令是否写入寄存器
-/* 疑惑 */
 	output reg[`RegBus] 		  return_addr_o, // 保存的返回地址
 
 	// 输出到pc_reg模块的信号

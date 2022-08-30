@@ -20,12 +20,12 @@ module ex(
 	output reg[`WriteBus]           wreg_o,        // ex阶段指令写寄存器使能
 	output reg[`RegBus]			    wdata_o,	   // ex阶段指令写入目的寄存器数据
 
-	output reg[`AluOpBus]			aluop_o,       // ex??????????????????
-	output reg[`RegBus]			    mem_addr_o,    // ???address
-	output reg[`RegBus]			    reg2_o,        // ex??ε?2????????
+	output reg[`AluOpBus]			aluop_o,       // ex阶段指令运算子类型
+	output reg[`RegBus]			    mem_addr_o,    // 写data_sram地址
+	output reg[`RegBus]			    reg2_o,        // 写data_sram数据
 
-	output wire[`InstAddrBus]		pc_o,          // ex??????pc
-	output wire 				    stallreq       // ex??????????????????
+	output wire[`InstAddrBus]		pc_o,          // ex阶段指令pc
+	output wire 				    stallreq       // ex阶段暂停申请信号
 	
 );
 	
