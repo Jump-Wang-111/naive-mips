@@ -666,10 +666,7 @@ module id(
 			endcase
 
 		end
-	end
-
-    always @(*) begin
-        // load relate
+		// load relate
         stallreq_reg1 <= `NoStop;
         stallreq_reg2 <= `NoStop;
         if(ex_inst_load == 1'b1 && ex_wd_i == reg1_addr_o && reg1_read_o == 1'b1) begin
@@ -701,25 +698,29 @@ module id(
 //            reg2_conflict_flag <= `MemConflict;
             reg2_o <= mem_wdata_i;
         end
-        
-//        if(reg1_conflict_flag == `ExConflict) begin
-//            reg1_o <= ex_wdata_i;
-//            reg1_conflict_flag <= `NoConflict;
-//        end
-//        else if(reg1_conflict_flag == `MemConflict) begin
-//            reg1_o <= mem_wdata_i;
-//            reg1_conflict_flag <= `NoConflict;
-//        end
+	end
 
-//        if(reg2_conflict_flag == `ExConflict) begin
-//            reg2_o <= ex_wdata_i;
-//            reg2_conflict_flag <= `NoConflict;
-//        end
-//        else if(reg2_conflict_flag == `MemConflict) begin
-//            reg2_o <= mem_wdata_i;
-//            reg2_conflict_flag <= `NoConflict;
-//        end
-    end
+//    always @(*) begin
+        
+        
+////        if(reg1_conflict_flag == `ExConflict) begin
+////            reg1_o <= ex_wdata_i;
+////            reg1_conflict_flag <= `NoConflict;
+////        end
+////        else if(reg1_conflict_flag == `MemConflict) begin
+////            reg1_o <= mem_wdata_i;
+////            reg1_conflict_flag <= `NoConflict;
+////        end
+
+////        if(reg2_conflict_flag == `ExConflict) begin
+////            reg2_o <= ex_wdata_i;
+////            reg2_conflict_flag <= `NoConflict;
+////        end
+////        else if(reg2_conflict_flag == `MemConflict) begin
+////            reg2_o <= mem_wdata_i;
+////            reg2_conflict_flag <= `NoConflict;
+////        end
+//    end
     
     always @(*) begin
 		if(rst == `RstDisable) begin
